@@ -1,0 +1,23 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "preferredName": "name",
+      "\\@type": "\\@type",
+      "forename": "givenname",
+      "surname": "familyName",
+      "placeOfBirth": {
+        "*": {
+          "preferredName": "birthPlace"
+        }
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "@context": "http://schema.org/",
+      "@type": "type"
+    }
+  }
+]
