@@ -40,7 +40,36 @@
                     </webResources>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <modules>
+                        <webModule>
+                            <groupId>de.indernetz</groupId>
+                            <artifactId>ef2so</artifactId>
+                            <bundleFileName>ef2so.war</bundleFileName>
+                            <contextRoot>/ef2so</contextRoot>
+                        </webModule>
+                        <ejbModule>
+                            <groupId>de.indernetz</groupId>
+                            <artifactId>ef2so</artifactId>
+                            <bundleFileName>ef2so.jar</bundleFileName>
+                        </ejbModule>
+                    </modules>
+                    <displayName>Entity Facts-to-Schema.org Converter</displayName>
+                    <generateApplicationXml>true</generateApplicationXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
         </plugins>
+        <finalName>ef2so</finalName>
     </build>
     <dependencies>
         <dependency>
@@ -53,7 +82,7 @@
             <artifactId>jersey-bundle</artifactId>
             <version>1.19.4</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>com.bazaarvoice.jolt</groupId>
             <artifactId>jolt-core</artifactId>
             <version>0.1.1</version>
@@ -62,6 +91,30 @@
             <groupId>com.bazaarvoice.jolt</groupId>
             <artifactId>json-utils</artifactId>
             <version>0.1.1</version>
+        </dependency>-->
+        <dependency>
+            <groupId>com.bazaarvoice.jolt</groupId>
+            <artifactId>jolt-complete</artifactId>
+            <version>0.1.1</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metamorph</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metafacture-json</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metafacture-strings</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+                                                                        
     </dependencies>
 </project>

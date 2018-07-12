@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2018 Michael Büchner, Deutsche Digitale Bibliothek.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+     
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<metamorph entityMarker="." version="1" xmlns="http://www.culturegraph.org/metamorph" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.culturegraph.org/metamorph https://raw.githubusercontent.com/metafacture/metafacture-core/master/metamorph/src/main/resources/schemata/metamorph.xsd">
+  <meta>
+    <name>Entity Facts-to-Schema.org Transformation</name>
+  </meta>
+  <rules>
+    <!-- @id -->
+    <data name="\@id" source="@id" />
+    <!-- @context -->
+    <data name="\@context" source="@id">
+      <constant value="http://schema.org/" />
+    </data>
+    <!-- @type -->
+    <choose flushWith="@type" name="\@type">
+      <data source="@type">
+        <equals string="person" />
+        <constant value="Person" />
+      </data>
+      <data source="@type">
+        <equals string="organisation" />
+        <constant value="Organization" />
+      </data>
+      <data source="@type">
+        <equals string="place" />
+        <constant value="Place" />
+      </data>
+    </choose>
+    <!-- name -->
+    <data name="name" source="preferredName">
+      <normalize-utf8 />
+    </data>
+    <!-- foundingDate -->
+    <entity flushWith="dateOfEstablishment#" name="foundingDate[]">
+      <data source="dateOfEstablishment#.*">
+        <normalize-utf8 />
+      </data>
+    </entity>
+    <!-- dissolutionDate -->
+    <entity flushWith="dateOfTermination#" name="dissolutionDate[]">
+      <data source="dateOfTermination#.*">
+        <normalize-utf8 />
+      </data>
+    </entity>
+    <!-- givenName -->
+    <data name="givenName" source="forename">
+      <normalize-utf8 />
+    </data>
+    <!-- familyName -->
+    <data name="familyName" source="surname">
+      <normalize-utf8 />
+    </data>
+    <!-- honorificPrefix -->
+    <entity flushWith="record" name="honorificPrefix[]">
+      <data source="titleOfNobility#.*">
+        <normalize-utf8 />
+      </data>
+      <data source="academicDegree#.*">
+        <normalize-utf8 />
+      </data>
+    </entity>
+    <!-- alternateName -->
+    <entity flushWith="record" name="alternateName[]">
+      <data source="realIdentity#.*.preferredName">
+        <normalize-utf8 />
+      </data>
+      <data source="pseudonym#.*.preferredName">
+        <normalize-utf8 />
+      </data>
+      <data source="variantName#.*">
+        <normalize-utf8 />
+      </data>
+    </entity>
+    <!-- birthDate -->
+    <data name="birthDate" source="dateOfBirth">
+      <normalize-utf8 />
+    </data>
+    <!-- deathDate -->
+    <data name="deathDate" source="dateOfDeath">
+      <normalize-utf8 />
+    </data>
+    <!-- gender -->
+    <choose flushWith="gender" name="gender">
+      <data source="gender.@id">
+        <equals string="http://d-nb.info/standards/vocab/gnd/gender#male" />
+        <constant value="http://schema.org/Male" />
+      </data>
+      <data source="gender.@id">
+        <equals string="http://d-nb.info/standards/vocab/gnd/gender#female" />
+        <constant value="http://schema.org/Female" />
+      </data>
+    </choose>
+    <!-- birthPlace -->
+    <entity flushWith="placeOfBirth#" name="birthPlace[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="placeOfBirth#.*.@id">
+          <constant value="Place" />
+        </data>
+        <data name="@id" source="placeOfBirth#.*.@id" />
+        <data name="name" source="placeOfBirth#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+    <!-- deathPlace -->
+    <entity flushWith="placeOfDeath#" name="deathPlace[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="placeOfDeath#.*.@id">
+          <constant value="Place" />
+        </data>
+        <data name="@id" source="placeOfDeath#.*.@id" />
+        <data name="name" source="placeOfDeath#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+    <!-- workLocation -->
+    <entity flushWith="placeOfActivity#" name="workLocation[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="placeOfActivity#.*.@id">
+          <constant value="Place" />
+        </data>
+        <data name="@id" source="placeOfActivity#.*.@id" />
+        <data name="name" source="placeOfActivity#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+    <!-- jobTitle -->
+    <entity flushWith="professionOrOccupation#" name="jobTitle[]">
+      <data name="name" source="professionOrOccupation#.*.preferredName">
+        <normalize-utf8 />
+      </data>
+    </entity>
+    <!-- parent -->
+    <entity flushWith="familialRelationship#" name="parent[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="familialRelationship#.*.@id">
+          <constant value="Person" />
+        </data>
+        <data name="@id" source="familialRelationship#.*.@id" />
+        <data name="name" source="familialRelationship#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+        <if>
+          <any reset="true">
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Mutter" />
+            </data>
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Vater" />
+            </data>
+          </any>
+        </if>
+      </entity>
+    </entity>
+    <!-- children -->
+    <entity flushWith="familialRelationship#" name="children[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="familialRelationship#.*.@id">
+          <constant value="Person" />
+        </data>
+        <data name="@id" source="familialRelationship#.*.@id" />
+        <data name="name" source="familialRelationship#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+        <if>
+          <any reset="true">
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Tochter" />
+            </data>
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Sohn" />
+            </data>
+          </any>
+        </if>
+      </entity>
+    </entity>
+    <!-- spouse -->
+    <entity flushWith="familialRelationship#" name="spouse[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="familialRelationship#.*.@id">
+          <constant value="Person" />
+        </data>
+        <data name="@id" source="familialRelationship#.*.@id" />
+        <data name="name" source="familialRelationship#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+        <if>
+          <any reset="true">
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Ehefrau" />
+            </data>
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Ehemann" />
+            </data>
+          </any>
+        </if>
+      </entity>
+    </entity>
+    <!-- sibling -->
+    <entity flushWith="familialRelationship#" name="sibling[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="familialRelationship#.*.@id">
+          <constant value="Person" />
+        </data>
+        <data name="@id" source="familialRelationship#.*.@id" />
+        <data name="name" source="familialRelationship#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+        <if>
+          <any reset="true">
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Schwester" />
+            </data>
+            <data source="familialRelationship#.*.relationship">
+              <equals string="Bruder" />
+            </data>
+          </any>
+        </if>
+      </entity>
+    </entity>
+    <!-- relatedTo -->
+    <entity flushWith="familialRelationship#" name="relatedTo[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="familialRelationship#.*.@id">
+          <constant value="Person" />
+        </data>
+        <data name="@id" source="familialRelationship#.*.@id" />
+        <data name="name" source="familialRelationship#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+        <if>
+          <all flushWith="familialRelationship#.*.relationship" reset="true">
+            <data source="familialRelationship#.*.relationship">
+              <not-equals string="Vater" />
+              <not-equals string="Mutter" />
+              <not-equals string="Tochter" />
+              <not-equals string="Sohn" />
+              <not-equals string="Ehefrau" />
+              <not-equals string="Ehemann" />
+              <not-equals string="Schwester" />
+              <not-equals string="Bruder" />
+            </data>
+          </all>
+        </if>
+      </entity>
+    </entity>
+    <!-- affiliation -->
+    <entity flushWith="affiliation#" name="affiliation[]">
+      <entity name="" sameEntity="true">
+        <data name="@type" source="affiliation#.*.@id">
+          <constant value="Organization" />
+        </data>
+        <data name="@id" source="affiliation#.*.@id" />
+        <data name="name" source="affiliation#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+    <!-- sameAs -->
+    <entity flushWith="sameAs#" name="sameAs[]">
+      <data source="sameAs#.*.@id" />
+    </entity>
+    <!-- about -->
+    <entity flushWith="topic#" name="about[]">
+      <entity name="" sameEntity="true">
+        <data name="@id" source="topic#.*.@id" />
+        <data name="name" source="topic#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+    <!-- location -->
+    <entity flushWith="location#" name="location[]">
+      <entity name="" sameEntity="true">
+        <data name="@id" source="location#.*.@id" />
+        <data name="name" source="location#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+    <!-- founder -->
+    <entity flushWith="founder#" name="founder[]">
+      <entity name="" sameEntity="true">
+        <data name="@id" source="founder#.*.@id" />
+        <data name="name" source="founder#.*.preferredName">
+          <normalize-utf8 />
+        </data>
+      </entity>
+    </entity>
+  </rules>
+</metamorph>
