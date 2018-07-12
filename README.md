@@ -1,7 +1,7 @@
-# ef2so - An Entity Facts-To-Schema-org Converter
-This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org:8080/yourpath/{GND-IDN}`.
+# ef2so - An Entity Facts-To-Schema.org Converter
+This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org/yourpath/{GND-IDN}`.
 
-*Online Demo:* https://ef2sop2000451198trial.hanatrial.ondemand.com/118540238
+*Online Demo:* https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118540238
 ## Entity types
 - Supported: `organisation`, `person` and `place`
 - *Unsupported*: `family` (due to a lack in Schema.org)
@@ -28,7 +28,8 @@ See [Google's documentation](https://developers.google.com/search/docs/guides/in
    "@type":"Person",
    "name":"Johann Wolfgang von Goethe",
    "birthDate":"28. August 1749",
-   "deathDate":"22. März 1832"
+   "deathDate":"22. März 1832",
+   ...
 }
 </script>
 ```
