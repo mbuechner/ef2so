@@ -98,20 +98,20 @@ public class Ef2soService {
         }
     }
 
-    private static String inputStreamToString(final InputStream is, final String charsetName) throws IOException {
-        if (is == null) {
-            return "";
-        }
-        try {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(charsetName)));
-            final StringBuilder stringBuffer = new StringBuilder();
-            int value;
-            while ((value = reader.read()) != -1) {
-                stringBuffer.append((char) value);
+    private static String inputStreamToString(final InputStream is, final String charset) throws IOException {
+        if (is != null) {
+            try {
+                final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)));
+                final StringBuilder sb = new StringBuilder();
+                int value;
+                while ((value = br.read()) != -1) {
+                    sb.append((char) value);
+                }
+                return sb.toString();
+            } finally {
+                is.close();
             }
-            return stringBuffer.toString();
-        } finally {
-            is.close();
         }
+        return "";
     }
 }

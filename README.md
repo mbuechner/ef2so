@@ -1,4 +1,4 @@
-# ef2so - An Entity Facts-To-Schema.org Converter
+# EF2SO - An Entity Facts-To-Schema.org Converter
 This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org/yourpath/{GND-IDN}`.
 
 *Online Demo:* https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118540238
@@ -40,6 +40,45 @@ As far as I know it is **not possible** to use the link element and refer to the
 ````html
 <link href="http://www.example.org/yourpath/118540238" rel="alternate" type="application/ld+json" />
 ````
+# Performance
+First that depends on your webserver of course! A non-representative benchmark showed that requests to EF2SO are only 33% slower than requests to Entity Facts.
+
+## Benchmark
+### Setup
+- Virtual Users: 10 (cloud servers located in the USA)
+- Duration 30sec.
+- Request rate: up to 150r/sec.
+
+### Results
+- EF2SO: avg. 765.58ms
+- Entity Facts: avg 573.25ms
+
+| %   |HTTP Status Code| Service | URL                                                                  | LoadTime (ms) |
+| ---:| --------------:| ------- | -------------------------------------------------------------------- | -------------:|
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100025250                    |           520 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100000193                    |           472 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100001394                    |           555 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100000355                    |           483 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/140585524                    |           569 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100054102                    |           659 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/118577182                    |           543 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100014704                    |           601 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/118540238                    |           629 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/118505556                    |           589 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/106220063                    |           659 |
+| 100 | 200            | EF      | http://hub.culturegraph.org/entityfacts/100001467                    |           600 |
+| 100 | 501            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118505556 |           719 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100000355 |           752 |
+| 100 | 501            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/140585524 |           854 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100001394 |           777 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/106220063 |           736 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100000193 |           775 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118540238 |           673 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100054102 |           736 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100025250 |           768 |
+| 100 | 501            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118577182 |           811 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100001467 |           725 |
+| 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100014704 |           861 |
 
 # Contribution
 Thanks to [jentschk](https://github.com/jentschk) for providing the conceptual mapping (Entity Facts data model to Schema.org data model).
