@@ -26,11 +26,17 @@ public class CORSFilter implements ContainerResponseFilter {
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
 
-        response.getHttpHeaders().add("Access-Control-Allow-Origin", request.getHeaderValue("Host").isEmpty() ? "*" : request.getHeaderValue("Host"));
+        String allowOrigin = "*";
+        if (request.getHeaderValue("Origin") != null && !request.getHeaderValue("Origin").isEmpty()) {
+            allowOrigin = request.getHeaderValue("Origin");
+        }
+
+        response.getHttpHeaders().add("Access-Control-Allow-Origin", allowOrigin);
         response.getHttpHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
         response.getHttpHeaders().add("Access-Control-Allow-Credentials", "true");
         response.getHttpHeaders().add("Access-Control-Allow-Methods", "GET");
         response.getHttpHeaders().add("Access-Control-Max-Age", "1728000");
+        
         return response;
     }
 }

@@ -15,27 +15,41 @@
  */
 package de.indernetz.ef2so.processor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ProcessorFactory {
 
-    private final static int MAX_POOL_SIZE = 100;
-    private final Processor[] pool;
-
+    private final static int MAX_POOL_SIZE = 1024;
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
+    private final List<Processor> pool = Collections.synchronizedList(new ArrayList<>());
+    
     private static final class InstanceHolder {
 
         static final ProcessorFactory INSTANCE = new ProcessorFactory();
     }
 
     private ProcessorFactory() {
-        pool = new Processor[MAX_POOL_SIZE];
+        LOG.info("Initializing pool with " + MAX_POOL_SIZE + " processors...");
         for (int i = 0; i < MAX_POOL_SIZE; ++i) {
-            pool[i] = new Processor();
+            pool.add(new Processor());
         }
+        LOG.info("Done initializing pool.");
     }
 
     public Processor getFreeProcessor() {
-        for (int i = 0; i < MAX_POOL_SIZE; ++i) {
-            if (pool[i].isFree()) {
-                return pool[i];
+        final Iterator<Processor> iterator = pool.iterator();
+        synchronized (pool) {
+            while (iterator.hasNext()) {
+                final Processor p = iterator.next();
+                if (p.isFree()) {
+                    p.setOccupied();
+                    return p;
+                }
             }
         }
         throw new IllegalStateException("Could not process request, because there's no processor left.");

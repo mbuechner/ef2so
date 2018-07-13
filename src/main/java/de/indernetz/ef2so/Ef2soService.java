@@ -29,9 +29,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,37 +41,42 @@ public class Ef2soService {
     private static final Logger LOG = LoggerFactory.getLogger(Ef2soService.class);
     private static final String EF_URL = "http://hub.culturegraph.org/entityfacts/";
 
-    @Context
-    private UriInfo context;
-
+//    @Context
+//    private UriInfo context;
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRoot() {
-        return this.get("");
+    public Response getRoot(@Context HttpHeaders headers) {
+        return this.get(headers, "");
     }
 
     @GET
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("idn") String idn) {
-
+    public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {
         try {
+
+            LOG.info("Execute request for IDN '" + idn + "'...");
+
             final URL url = new URL(EF_URL + idn);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             if (conn.getResponseCode() != 200) {
+                final String result = inputStreamToString(conn.getErrorStream(), "UTF-8");
+                final String contenType = conn.getContentType();
+                final int responseCode = conn.getResponseCode();
+                conn.disconnect();
                 return Response
-                        .status(conn.getResponseCode())
-                        .type(conn.getContentType())
-                        .entity(conn.getErrorStream())
+                        .status(responseCode)
+                        .type(contenType)
+                        .entity(result)
                         .build();
             }
 
-            LOG.info("Execute request for IDN " + idn);
-
             final Processor p = ProcessorFactory.getInstance().getFreeProcessor();
             final String result = p.process(inputStreamToString(conn.getInputStream(), "UTF-8"));
-            p.setFree(); // always set the processor free
+            p.setFree(); // always set the processor free from outside
+
+            conn.disconnect();
 
             if (result.isEmpty()) {
                 return Response
@@ -81,7 +86,7 @@ public class Ef2soService {
             }
 
             return Response
-                    .status(conn.getResponseCode())
+                    .status(200)
                     .entity(result)
                     .build();
         } catch (Exception e) {
@@ -93,7 +98,10 @@ public class Ef2soService {
         }
     }
 
-    private static String inputStreamToString(InputStream is, String charsetName) throws IOException {
+    private static String inputStreamToString(final InputStream is, final String charsetName) throws IOException {
+        if (is == null) {
+            return "";
+        }
         try {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(charsetName)));
             final StringBuilder stringBuffer = new StringBuilder();

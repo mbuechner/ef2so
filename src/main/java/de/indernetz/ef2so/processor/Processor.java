@@ -20,11 +20,14 @@ import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
 import org.metafacture.metamorph.Metamorph;
 import org.metafacture.strings.StringConcatenator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Processor {
 
     private static final String MORPH_FILTER_SCRIPT = "ef2so_filter.xml";
     private static final String MORPH_TRANS_SCRIPT = "ef2so_transformation.xml";
+    private static final Logger LOG = LoggerFactory.getLogger(Processor.class);
     private final Metamorph trans;
     private final Filter filter;
     private final JsonEncoder jsonEncoder;
@@ -50,15 +53,21 @@ public class Processor {
     }
 
     public String process(String input) {
-        this.free = false;
+        LOG.debug("Processor " + this.hashCode() + " starts processing...");
         myjsonDecoder.process(input);
-        return stringConcatenator.getString();
+        final String result = stringConcatenator.getString();
+        LOG.debug("Processor " + this.hashCode() + " is done.");
+        return result;
     }
 
     public boolean isFree() {
         return free;
     }
 
+    public void setOccupied() {
+        this.free = false;
+    }
+    
     public void setFree() {
         myjsonDecoder.resetStream();
         this.free = true;
