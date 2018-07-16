@@ -41,11 +41,12 @@ As far as I know it is **not possible** to use the link element and refer to the
 <link href="http://www.example.org/yourpath/118540238" rel="alternate" type="application/ld+json" />
 ````
 # Performance
-First that depends on your webserver of course! A non-representative benchmark showed that requests to EF2SO are only 33% slower than requests to Entity Facts.
+First, that depends on your webserver of course! A non-representative benchmark showed that requests to EF2SO are only 33% slower than requests to Entity Facts.
 
 ## Benchmark
 ### Setup
 - Virtual Users: 10 (cloud servers located in the USA)
+- Entity Facts and EF2SO servers located in Frankfurt, Germany
 - Duration 30sec.
 - Request rate: up to 150r/sec.
 
