@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.indernetz.ef2so.processor;
+package de.ddb.ef2so.processor;
 
-import de.indernetz.ef2so.metafacture.JsonDecoder;
+
+import org.metafacture.json.JsonDecoder;
 import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
 import org.metafacture.metamorph.Metamorph;
@@ -53,10 +54,10 @@ public class Processor {
     }
 
     public String process(String input) {
-        LOG.debug("Processor " + this.hashCode() + " starts processing...");
+        LOG.debug("Processor {} starts processing...", this.hashCode());
         myjsonDecoder.process(input);
         final String result = stringConcatenator.getString();
-        LOG.debug("Processor " + this.hashCode() + " is done.");
+        LOG.debug("Processor {} is done.", this.hashCode());
         return result;
     }
 

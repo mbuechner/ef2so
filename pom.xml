@@ -7,22 +7,74 @@
     <artifactId>ef2so</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Entity Facts-to-Schema.org Converter</name>
-    
+    <name>EF2SO</name>
+    <description>An Entity Facts-To-Schema.org Converter</description>
+    <url>https://github.com/mbuechner/ef2so</url>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>mbuechner</id>
+            <name>Michael Büchner</name>
+            <organization>Deutsche Digitale Bibliothek</organization>
+        </developer>
+    </developers>
+    <organization>
+        <name>Deutsche Digitale Bibliothek</name>
+        <url>https://www.deutsche-digitale-bibliothek.de/</url>
+    </organization>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/mbuechner/ef2so/issues</url>
+    </issueManagement>
+    <scm>
+        <connection>scm:git:https://github.com/mbuechner/ef2so.git</connection>
+        <url>https://github.com/mbuechner/ef2so</url>
+    </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.19.4</version>
+        </dependency>       
+        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metamorph</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metafacture-json</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metafacture-strings</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.6</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.2</version>
@@ -68,40 +120,32 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <outputDirectory>${basedir}/docs</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>       
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <excludes>
+                        <exclude>**/de/ddb/ef2so/playground/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
         <finalName>ef2so</finalName>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-bundle</artifactId>
-            <version>1.19.4</version>
-        </dependency>       
-        <dependency>
-            <groupId>org.metafacture</groupId>
-            <artifactId>metamorph</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.metafacture</groupId>
-            <artifactId>metafacture-json</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.metafacture</groupId>
-            <artifactId>metafacture-strings</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.9.6</version>
-            <type>jar</type>
-        </dependency>
-    </dependencies>
 </project>

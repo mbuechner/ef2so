@@ -11,6 +11,9 @@ This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Sche
 2. Get data from Entity Facts: http://hub.culturegraph.org/entityfacts/118540238
 3. Transform data (JSON-LD to JSON-LD): Transformation ([Mapping](src/main/resources/ef2so_transformation.xml)) is made with [Metafacture](https://github.com/metafacture/metafacture-core)
 
+# Contribution
+Thanks to [jentschk](https://github.com/jentschk) for providing the conceptual mapping (Entity Facts data model to Schema.org data model).
+
 # Compile & Deploy
 1. Download Maven Project from this repository.
 2. Install [Maven](https://maven.apache.org/) project management tool.
@@ -52,7 +55,7 @@ First, that depends on your webserver of course! A non-representative benchmark 
 
 ### Results
 - EF2SO: avg. 765.58ms
-- Entity Facts: avg 573.25ms
+- Entity Facts: avg. 573.25ms
 
 | %   |HTTP Status Code| Service | URL                                                                  | LoadTime (ms) |
 | ---:| --------------:| ------- | -------------------------------------------------------------------- | -------------:|
@@ -80,6 +83,3 @@ First, that depends on your webserver of course! A non-representative benchmark 
 | 100 | 501            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118577182 |           811 |
 | 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100001467 |           725 |
 | 100 | 200            | EF2SO   | https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/100014704 |           861 |
-
-# Contribution
-Thanks to [jentschk](https://github.com/jentschk) for providing the conceptual mapping (Entity Facts data model to Schema.org data model).

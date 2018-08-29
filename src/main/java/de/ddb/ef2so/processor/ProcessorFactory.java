@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.indernetz.ef2so.processor;
+package de.ddb.ef2so.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,16 +25,15 @@ import org.slf4j.LoggerFactory;
 public class ProcessorFactory {
 
     private final static int MAX_POOL_SIZE = 1024;
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
     private final List<Processor> pool = Collections.synchronizedList(new ArrayList<>());
-    
+    private final static Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
+        
     private static final class InstanceHolder {
-
         static final ProcessorFactory INSTANCE = new ProcessorFactory();
     }
 
     private ProcessorFactory() {
-        LOG.info("Initializing pool with " + MAX_POOL_SIZE + " processors...");
+        LOG.info("Initializing pool with {} processors...", MAX_POOL_SIZE);
         for (int i = 0; i < MAX_POOL_SIZE; ++i) {
             pool.add(new Processor());
         }

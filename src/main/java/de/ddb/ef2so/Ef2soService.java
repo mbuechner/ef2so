@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.indernetz.ef2so;
+package de.ddb.ef2so;
 
-import de.indernetz.ef2so.processor.Processor;
-import de.indernetz.ef2so.processor.ProcessorFactory;
+import de.ddb.ef2so.processor.Processor;
+import de.ddb.ef2so.processor.ProcessorFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,12 +41,12 @@ public class Ef2soService {
     private static final Logger LOG = LoggerFactory.getLogger(Ef2soService.class);
     private static final String EF_URL = "http://hub.culturegraph.org/entityfacts/";
 
-//    @Context
-//    private UriInfo context;
+    // @Context
+    // private UriInfo context;
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRoot(@Context HttpHeaders headers) {
-        return this.get(headers, "");
+        return get(headers, "");
     }
 
     @GET
@@ -55,8 +55,7 @@ public class Ef2soService {
     public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {
         try {
 
-            LOG.info("Execute request for IDN '" + idn + "'...");
-
+            LOG.info("Execute request for IDN '{}'...", idn);
             final URL url = new URL(EF_URL + idn);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -74,8 +73,8 @@ public class Ef2soService {
 
             final Processor p = ProcessorFactory.getInstance().getFreeProcessor();
             final String result = p.process(inputStreamToString(conn.getInputStream(), "UTF-8"));
+            
             p.setFree(); // always set the processor free from outside
-
             conn.disconnect();
 
             if (result.isEmpty()) {
@@ -89,8 +88,9 @@ public class Ef2soService {
                     .status(200)
                     .entity(result)
                     .build();
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            
+        } catch (IOException e) {
+            LOG.error(e.getLocalizedMessage(), e);
             return Response
                     .status(500)
                     .entity("{\"Error\":\"" + e.getMessage() + "\"}")
@@ -98,7 +98,14 @@ public class Ef2soService {
         }
     }
 
-    private static String inputStreamToString(final InputStream is, final String charset) throws IOException {
+    /**
+     * Converts a InputString to a String
+     * @param is Input as InputString
+     * @param charset Charset ("UTF-8")
+     * @return String with content
+     * @throws IOException 
+     */
+    public static String inputStreamToString(final InputStream is, final String charset) throws IOException {
         if (is != null) {
             try {
                 final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)));
