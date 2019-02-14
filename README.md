@@ -21,6 +21,20 @@ Thanks to [jentschk](https://github.com/jentschk) for providing the conceptual m
 4. Take `target\ef2so.war`and deploy it on your webserver.
 5. Open Browser, if you're running a local [Tomcat](http://tomcat.apache.org/): http://localhost:8080/118540238
 
+# Docker
+Yes, there's a docker container for EF2SO availible at DockerHub. See https://hub.docker.com/r/mbuechner/ef2so
+```
+docker pull mbuechner/ef2so
+```
+## Container build
+1. Checkout GitHub repository: `git clone https://github.com/mbuechner/ef2so`
+2. Go into folder: `cd ef2so`
+3. Run `docker build -t ef2so .`
+4. Start container with: `docker run -d -p 8080:8080 -P ef2so`
+5. Open browser: http://localhost:8080/118540238
+ 
+Note: The container does listen on port 8080.
+
 # How to use it on your website?
 See [Google's documentation](https://developers.google.com/search/docs/guides/intro-structured-data). It's better to dynamically inject the Schema.org-JSON-LD, than waiting for the service. Google does support that! It's basically:
 ```html
