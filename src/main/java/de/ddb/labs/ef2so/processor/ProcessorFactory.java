@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ddb.ef2so.processor;
+package de.ddb.labs.ef2so.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;

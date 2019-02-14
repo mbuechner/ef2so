@@ -25,7 +25,7 @@ limitations under the License.
         <load-on-startup>1</load-on-startup>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter,de.indernetz.ef2so.jerseyfilter.CORSFilter</param-value>
+            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter,de.ddb.labs.ef2so.jerseyfilter.CORSFilter</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

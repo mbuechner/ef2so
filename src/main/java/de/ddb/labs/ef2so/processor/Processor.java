@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ddb.ef2so.processor;
+package de.ddb.labs.ef2so.processor;
 
 
-import org.metafacture.json.JsonDecoder;
+import de.ddb.labs.ef2so.metafacture.JsonDecoder;
 import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
 import org.metafacture.metamorph.Metamorph;

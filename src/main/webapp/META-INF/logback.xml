@@ -17,14 +17,14 @@ limitations under the License.
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
         <encoder>
             <pattern>%d{yyyy-MM-dd'T'HH:mm:ssZ} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     
-    <logger name="de.indernetz.ef2so" additivity="true">
+    <logger name="de.ddb.labs.ef2so" additivity="true">
         <appender-ref ref="STDOUT" />
     </logger>
 

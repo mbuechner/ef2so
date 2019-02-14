@@ -19,7 +19,7 @@
     <developers>
         <developer>
             <id>mbuechner</id>
-            <name>Michael Büchner</name>
+            <name>Michael Bï¿½chner</name>
             <organization>Deutsche Digitale Bibliothek</organization>
         </developer>
     </developers>
@@ -54,22 +54,22 @@
         <dependency>
             <groupId>org.metafacture</groupId>
             <artifactId>metamorph</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.metafacture</groupId>
             <artifactId>metafacture-json</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.metafacture</groupId>
             <artifactId>metafacture-strings</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.6</version>
+            <version>2.9.8</version>
             <type>jar</type>
         </dependency>
     </dependencies>

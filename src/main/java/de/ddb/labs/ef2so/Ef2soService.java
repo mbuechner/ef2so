@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ddb.ef2so;
+package de.ddb.labs.ef2so;
 
-import de.ddb.ef2so.processor.Processor;
-import de.ddb.ef2so.processor.ProcessorFactory;
+import de.ddb.labs.ef2so.processor.Processor;
+import de.ddb.labs.ef2so.processor.ProcessorFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

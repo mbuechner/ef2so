@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ddb.ef2so.metafacture;
+package de.ddb.labs.ef2so.metafacture;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -33,7 +33,7 @@ import java.io.IOException;
 public final class JsonDecoder extends DefaultObjectPipe<String, StreamReceiver> {
 
     public static final String DEFAULT_ARRAY_MARKER = "#";
-    public static final String DEFAULT_ARRAY_NAME = "#%d";
+    public static final String DEFAULT_ARRAY_NAME = "%d";
     public static final String DEFAULT_RECORD_ID = "%d";
     private final JsonFactory jsonFactory = new JsonFactory();
 

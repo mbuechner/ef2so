@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ddb.ef2so.playground;
+package de.ddb.labs.ef2so.playground;
 
-import de.ddb.ef2so.metafacture.JsonDecoder;
+import de.ddb.labs.ef2so.metafacture.JsonDecoder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
