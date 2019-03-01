@@ -3,7 +3,7 @@ This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Sche
 
 *Online Demo:* https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118540238
 
-*EF2SO at DDBlabs:* https://labs.ddb.de/app/ef2so
+*EF2SO at DDBlabs:* https://labs.ddb.de/app/ef2so/118540238
 ## Entity types
 - Supported: `organisation`, `person` and `place`
 - *Unsupported*: `family` (due to a lack in Schema.org)
