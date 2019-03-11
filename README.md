@@ -1,6 +1,11 @@
 # EF2SO - An Entity Facts-To-Schema.org Converter
 This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org/yourpath/{GND-IDN}`.
 
+<<<<<<< HEAD
+=======
+*Online Demo:* https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118540238
+
+>>>>>>> af8abc47c0449fff4b1d44d2b9a602ef8bc25eb2
 *EF2SO at DDBlabs:* https://labs.ddb.de/app/ef2so/118540238
 ## Entity types
 - Supported: `organisation`, `person` and `place`
