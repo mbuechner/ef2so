@@ -33,7 +33,7 @@ import java.io.IOException;
 public final class JsonDecoder extends DefaultObjectPipe<String, StreamReceiver> {
 
     public static final String DEFAULT_ARRAY_MARKER = "#";
-    public static final String DEFAULT_ARRAY_NAME = "%d";
+    public static final String DEFAULT_ARRAY_NAME = "#item";
     public static final String DEFAULT_RECORD_ID = "%d";
     private final JsonFactory jsonFactory = new JsonFactory();
 

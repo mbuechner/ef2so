@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.metafacture.strings.StringConcatenator;
 
 /**
  *
- * @author buechner
+ * @author Michael Büchner <m.buechner@dnb.de>
  */
 public class MetamorphMain {
 
@@ -40,23 +40,27 @@ public class MetamorphMain {
 
     public static void main(String[] args) throws MalformedURLException, IOException {
         // final URL url = new URL("http://hub.culturegraph.org/entityfacts/133070557"); // Familie
-        final URL url = new URL("http://hub.culturegraph.org/entityfacts/118540238");
+        final URL url = new URL("http://hub.culturegraph.org/entityfacts/9776-7");
+        // final URL url = new URL("http://hub.culturegraph.org/entityfacts/118540238"); // Goethe
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.addRequestProperty("Accept-Language", "en");
 
         final Filter f = new Filter(MORPH_FILTER_SCRIPT);
         final Metamorph trans = new Metamorph(MORPH_TRANS_SCRIPT);
         final JsonEncoder jsonEncoder = new JsonEncoder();
+        // final StreamLogger logger = new StreamLogger();
         jsonEncoder.setPrettyPrinting(true);
-        
+
         final JsonDecoder myjsonDecoder = new JsonDecoder();
         final StringConcatenator stringConcatenator = new StringConcatenator();
 
         myjsonDecoder
                 .setReceiver(f)
+                // .setReceiver(logger)
                 .setReceiver(trans)
                 .setReceiver(jsonEncoder)
                 .setReceiver(stringConcatenator);
-        
+
         myjsonDecoder.process(inputStreamToString(conn.getInputStream(), "UTF-8"));
 
         final String result = stringConcatenator.getString();

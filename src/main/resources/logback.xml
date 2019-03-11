@@ -15,9 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <configuration>
-    <!-- Send debug messages to System.out -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- By default, encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
@@ -26,7 +24,7 @@ limitations under the License.
         </encoder>
     </appender>
     
-    <logger name="de.indernetz.ef2so" additivity="true">
+    <logger name="ROOT" additivity="true">
         <appender-ref ref="STDOUT" />
     </logger>
 </configuration>

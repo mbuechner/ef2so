@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,10 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author Michael Büchner <m.buechner@dnb.de>
+ */
 @Path("/")
 public class Ef2soService {
 
@@ -43,12 +47,24 @@ public class Ef2soService {
 
     // @Context
     // private UriInfo context;
+    
+    /**
+     * Root entry point without IDN
+     * @param headers HTTP Request Header
+     * @return  
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRoot(@Context HttpHeaders headers) {
         return get(headers, "");
     }
 
+    /**
+     * Entry point with IDN
+     * @param headers HTTP Request Header
+     * @param idn IDN, the number from GND-URI
+     * @return 
+     */
     @GET
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -58,6 +74,7 @@ public class Ef2soService {
             LOG.info("Execute request for IDN '{}'...", idn);
             final URL url = new URL(EF_URL + idn);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.addRequestProperty("Accept-Language", "en");
 
             if (conn.getResponseCode() != 200) {
                 final String result = inputStreamToString(conn.getErrorStream(), "UTF-8");

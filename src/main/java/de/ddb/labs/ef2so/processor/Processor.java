@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,10 @@ import org.metafacture.strings.StringConcatenator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author Michael Büchner <m.buechner@dnb.de>
+ */
 public class Processor {
 
     private static final String MORPH_FILTER_SCRIPT = "ef2so_filter.xml";

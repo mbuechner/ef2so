@@ -1,7 +1,7 @@
 # EF2SO - An Entity Facts-To-Schema.org Converter
 This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org/yourpath/{GND-IDN}`.
 
-*Online Demo:* https://ef2sop2000451198trial.hanatrial.ondemand.com/ef2so/118540238
+*EF2SO at DDBlabs:* https://labs.ddb.de/app/ef2so/118540238
 ## Entity types
 - Supported: `organisation`, `person` and `place`
 - *Unsupported*: `family` (due to a lack in Schema.org)
@@ -18,11 +18,11 @@ Thanks to [jentschk](https://github.com/jentschk) for providing the conceptual m
 1. Download Maven Project from this repository.
 2. Install [Maven](https://maven.apache.org/) project management tool.
 3. Run in the folder with `pom.xml` the following command: `mvn clean package`
-4. Take `target\ef2so.war`and deploy it on your webserver.
+4. Take `target\ef2so.war`and deploy it on your web server.
 5. Open Browser, if you're running a local [Tomcat](http://tomcat.apache.org/): http://localhost:8080/118540238
 
 # Docker
-Yes, there's a docker container for EF2SO availible at DockerHub. See https://hub.docker.com/r/mbuechner/ef2so
+Yes, there's a docker container for EF2SO available at DockerHub. See https://hub.docker.com/r/mbuechner/ef2so
 ```
 docker pull mbuechner/ef2so
 ```

@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>de.indernetz</groupId>
+    <groupId>de.ddb.labs</groupId>
     <artifactId>ef2so</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>war</packaging>
     <name>EF2SO</name>
     <description>An Entity Facts-To-Schema.org Converter</description>
@@ -19,7 +19,7 @@
     <developers>
         <developer>
             <id>mbuechner</id>
-            <name>Michael B�chner</name>
+            <name>Michael Büchner</name>
             <organization>Deutsche Digitale Bibliothek</organization>
         </developer>
     </developers>
@@ -56,6 +56,14 @@
             <artifactId>metamorph</artifactId>
             <version>5.0.1</version>
         </dependency>
+        
+        <!-- Debug -->
+        <!--        <dependency>
+            <groupId>org.metafacture</groupId>
+            <artifactId>metafacture-monitoring</artifactId>
+            <version>5.0.1</version>
+        </dependency> -->
+       
         <dependency>
             <groupId>org.metafacture</groupId>
             <artifactId>metafacture-json</artifactId>
@@ -98,13 +106,13 @@
                 <configuration>
                     <modules>
                         <webModule>
-                            <groupId>de.indernetz</groupId>
+                            <groupId>de.ddb.labs</groupId>
                             <artifactId>ef2so</artifactId>
                             <bundleFileName>ef2so.war</bundleFileName>
                             <contextRoot>/ef2so</contextRoot>
                         </webModule>
                         <ejbModule>
-                            <groupId>de.indernetz</groupId>
+                            <groupId>de.ddb.labs</groupId>
                             <artifactId>ef2so</artifactId>
                             <bundleFileName>ef2so.jar</bundleFileName>
                         </ejbModule>
@@ -141,7 +149,7 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <excludes>
-                        <exclude>**/de/ddb/ef2so/playground/*.java</exclude>
+                        <exclude>**/de/ddb/labs/ef2so/playground/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

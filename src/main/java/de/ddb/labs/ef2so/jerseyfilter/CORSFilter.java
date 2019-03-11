@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,19 @@ import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
+/**
+ *
+ * @author Michael Büchner <m.buechner@dnb.de>
+ */
 @Provider
 public class CORSFilter implements ContainerResponseFilter {
 
+    /**
+     * Adds a CORS header the all responses
+     * @param request HTTP Request
+     * @param response
+     * @return 
+     */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
 

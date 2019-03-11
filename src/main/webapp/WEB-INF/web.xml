@@ -20,7 +20,7 @@ limitations under the License.
          id="WebApp_ID" version="3.1">
     <display-name>ef2so</display-name>
     <servlet>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>EF2SO</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <load-on-startup>1</load-on-startup>
         <init-param>
@@ -29,7 +29,7 @@ limitations under the License.
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>EF2SO</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 </web-app>
