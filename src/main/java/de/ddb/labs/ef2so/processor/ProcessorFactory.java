@@ -31,8 +31,9 @@ public class ProcessorFactory {
     private final static int MAX_POOL_SIZE = 128; // no. of max. parallel requests
     private final List<Processor> pool = Collections.synchronizedList(new ArrayList<>());
     private final static Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
-        
+
     private static final class InstanceHolder {
+
         static final ProcessorFactory INSTANCE = new ProcessorFactory();
     }
 
@@ -62,3 +63,4 @@ public class ProcessorFactory {
         return InstanceHolder.INSTANCE;
     }
 }
+

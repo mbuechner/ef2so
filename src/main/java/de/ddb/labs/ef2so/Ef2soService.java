@@ -47,11 +47,11 @@ public class Ef2soService {
 
     // @Context
     // private UriInfo context;
-    
     /**
      * Root entry point without IDN
+     *
      * @param headers HTTP Request Header
-     * @return  
+     * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,9 +61,10 @@ public class Ef2soService {
 
     /**
      * Entry point with IDN
+     *
      * @param headers HTTP Request Header
      * @param idn IDN, the number from GND-URI
-     * @return 
+     * @return
      */
     @GET
     @Path("{idn}")
@@ -90,7 +91,7 @@ public class Ef2soService {
 
             final Processor p = ProcessorFactory.getInstance().getFreeProcessor();
             final String result = p.process(inputStreamToString(conn.getInputStream(), "UTF-8"));
-            
+
             p.setFree(); // always set the processor free from outside
             conn.disconnect();
 
@@ -105,7 +106,7 @@ public class Ef2soService {
                     .status(200)
                     .entity(result)
                     .build();
-            
+
         } catch (IOException e) {
             LOG.error(e.getLocalizedMessage(), e);
             return Response
@@ -117,10 +118,11 @@ public class Ef2soService {
 
     /**
      * Converts a InputString to a String
+     *
      * @param is Input as InputString
      * @param charset Charset ("UTF-8")
      * @return String with content
-     * @throws IOException 
+     * @throws IOException
      */
     public static String inputStreamToString(final InputStream is, final String charset) throws IOException {
         if (is != null) {
@@ -139,3 +141,4 @@ public class Ef2soService {
         return "";
     }
 }
+

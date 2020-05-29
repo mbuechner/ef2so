@@ -15,18 +15,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <metamorph entityMarker="." version="1" xmlns="http://www.culturegraph.org/metamorph" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.culturegraph.org/metamorph https://raw.githubusercontent.com/metafacture/metafacture-core/master/metamorph/src/main/resources/schemata/metamorph.xsd">
-  <meta>
-    <name>Entity Facts-to-Schema.org Type Filter</name>
-  </meta>
-  <rules>
-    <combine name="OK" value="OK">
-      <data source="@type">
-        <whitelist>
-          <entry name="organisation" />
-          <entry name="place" />
-          <entry name="person" />
-        </whitelist>
-      </data>
-    </combine>
-  </rules>
+    <meta>
+        <name>Entity Facts-to-Schema.org Type Filter</name>
+    </meta>
+    <rules>
+        <combine name="OK" value="OK">
+            <data source="@type">
+                <whitelist>
+                    <entry name="organisation" />
+                    <entry name="place" />
+                    <entry name="person" />
+                </whitelist>
+            </data>
+        </combine>
+    </rules>
 </metamorph>

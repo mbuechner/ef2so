@@ -29,9 +29,10 @@ public class CORSFilter implements ContainerResponseFilter {
 
     /**
      * Adds a CORS header the all responses
+     *
      * @param request HTTP Request
      * @param response
-     * @return 
+     * @return
      */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
@@ -46,7 +47,8 @@ public class CORSFilter implements ContainerResponseFilter {
         response.getHttpHeaders().add("Access-Control-Allow-Credentials", "true");
         response.getHttpHeaders().add("Access-Control-Allow-Methods", "GET");
         response.getHttpHeaders().add("Access-Control-Max-Age", "1728000");
-        
+
         return response;
     }
 }
+

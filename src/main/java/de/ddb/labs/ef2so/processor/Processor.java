@@ -15,7 +15,6 @@
  */
 package de.ddb.labs.ef2so.processor;
 
-
 import de.ddb.labs.ef2so.metafacture.JsonDecoder;
 import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
@@ -72,10 +71,11 @@ public class Processor {
     public void setOccupied() {
         this.free = false;
     }
-    
+
     public void setFree() {
         myjsonDecoder.resetStream();
         this.free = true;
     }
 
 }
+
