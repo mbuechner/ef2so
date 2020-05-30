@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
+Copyright 2018-2020 Michael Büchner, Deutsche Digitale Bibliothek.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,4 +14,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<Context path="" docBase="ef2so" debug="0" reloadable="true" />
+<Context docBase="ef2so" path="/" reloadable="true"/>

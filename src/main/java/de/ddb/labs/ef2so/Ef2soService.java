@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2020 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,4 +141,3 @@ public class Ef2soService {
         return "";
     }
 }
-

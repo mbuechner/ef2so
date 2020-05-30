@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2018 Michael Büchner, Deutsche Digitale Bibliothek.
+Copyright 2018-2020 Michael Büchner, Deutsche Digitale Bibliothek.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ limitations under the License.
     <display-name>ef2so</display-name>
     <servlet>
         <servlet-name>EF2SO</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-        <load-on-startup>1</load-on-startup>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <load-on-startup>1</load-on-startup>		
         <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter,de.ddb.labs.ef2so.jerseyfilter.CORSFilter</param-value>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>de.ddb.labs.ef2so</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2019 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2020 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ public class MetamorphMain {
 
     public static void main(String[] args) throws MalformedURLException, IOException {
         // final URL url = new URL("http://hub.culturegraph.org/entityfacts/133070557"); // Familie
-        final URL url = new URL("http://hub.culturegraph.org/entityfacts/9776-7");
-        // final URL url = new URL("http://hub.culturegraph.org/entityfacts/118540238"); // Goethe
+        // final URL url = new URL("http://hub.culturegraph.org/entityfacts/9776-7");
+        final URL url = new URL("http://hub.culturegraph.org/entityfacts/118540238"); // Goethe
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.addRequestProperty("Accept-Language", "en");
 
