@@ -8,6 +8,8 @@ RUN mvn package
 FROM tomcat:jdk14-openjdk-slim-buster
 MAINTAINER Michael Büchner <m.buechner@dnb.de>
 COPY --from=MAVEN_CHAIN /tmp/target/ef2so.war $CATALINA_HOME/webapps/ROOT.war
+RUN apt update && apt install -y wget
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 HEALTHCHECK --interval=1m --timeout=3s CMD wget --quiet --tries=1 --spider http://localhost:8080/118540238 || exit
 
