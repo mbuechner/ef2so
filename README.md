@@ -13,7 +13,7 @@ This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Sche
 3. Transform data (JSON-LD to JSON-LD): Transformation ([Mapping](src/main/resources/ef2so_transformation.xml)) is made with [Metafacture](https://github.com/metafacture/metafacture-core)
 
 # Contribution
-Thanks to [jentschk](https://github.com/jentschk) for providing the conceptual mapping (Entity Facts data model to Schema.org data model).
+Thanks to  [Jana Hentschke](https://twitter.com/junicatalo) for providing the conceptual mapping (Entity Facts data model to Schema.org data model).
 
 # Compile & Deploy
 1. Download Maven Project from this repository.
