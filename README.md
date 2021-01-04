@@ -1,4 +1,4 @@
-![Java CI with Maven](https://github.com/mbuechner/ef2so/workflows/Java%20CI%20with%20Maven/badge.svg) ![Docker](https://github.com/mbuechner/ef2so/workflows/Docker/badge.svg)
+![Java CI with Maven](https://github.com/mbuechner/ef2so/workflows/Java%20CI%20with%20Maven/badge.svg) ![Docker](https://github.com/mbuechner/ef2so/workflows/Docker/badge.svg) ![Sonar](https://github.com/mbuechner/ef2so/workflows/Sonar/badge.svg)
 # EF2SO - An Entity Facts-To-Schema.org Converter
 This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org/yourpath/{GND-IDN}`.
 
