@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.InvalidParameterException;
+import java.util.regex.Pattern;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -44,6 +46,8 @@ public class Ef2soService {
 
     private static final Logger LOG = LoggerFactory.getLogger(Ef2soService.class);
     private static final String EF_URL = "http://hub.culturegraph.org/entityfacts/";
+    private static final String GND_IDN_PATTERN = "(1[012]?\\d{7}[0-9X]|[47]\\d{6}-\\d|[1-9]\\d{0,7}-[0-9X]|3\\d{7}[0-9X])";
+    private final Pattern gndIdnPattern = Pattern.compile(GND_IDN_PATTERN);
 
     // @Context
     // private UriInfo context;
@@ -72,6 +76,9 @@ public class Ef2soService {
     public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {
         try {
 
+            if (!gndIdnPattern.matcher(idn).matches()) {
+                throw new InvalidParameterException("Invalid IDN given.");
+            }
             LOG.info("Execute request for IDN '{}'...", idn);
             final URL url = new URL(EF_URL + idn);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
