@@ -34,7 +34,7 @@ docker pull mbuechner/ef2so
 4. Start container with: `docker run -d -p 8080:8080 -P ef2so`
 5. Open browser: http://localhost:8080/118540238
  
-Note: The container does listen on port 8080.
+Note: The container is listen on port 8080. If you need a path prefix start container e.g. with `docker run -d -p 8080:8080 -P --env "URLPATTERN=/foo/bar/*" ef2so` and application will be available under http://localhost:8080/foo/bar/118540238
 
 # How to use it on your website?
 See [Google's documentation](https://developers.google.com/search/docs/guides/intro-structured-data). It's better to dynamically inject the Schema.org-JSON-LD, than waiting for the service. Google does support that! It's basically:
