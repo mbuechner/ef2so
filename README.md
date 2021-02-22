@@ -72,29 +72,30 @@ First, that depends on your webserver of course! A non-representative benchmark 
 - EF2SO: avg. 765.58ms
 - Entity Facts: avg. 573.25ms
 
-| %   | HTTP Status Code | Service | URL                                                | LoadTime (ms) |
-|-----|------------------|---------|----------------------------------------------------|---------------|
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100025250  | 520           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000193  | 472           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001394  | 555           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000355  | 483           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/140585524  | 569           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100054102  | 659           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118577182  | 543           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100014704  | 601           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118540238  | 629           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118505556  | 589           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/106220063  | 659           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001467  | 600           |
-| 100 | 501              | EF2SO   | https://hub.culturegraph.org/entityfacts/118505556 | 719           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100000355 | 752           |
-| 100 | 501              | EF2SO   | https://hub.culturegraph.org/entityfacts/140585524 | 854           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100001394 | 777           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/106220063 | 736           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100000193 | 775           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/118540238 | 673           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100054102 | 736           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100025250 | 768           |
-| 100 | 501              | EF2SO   | https://hub.culturegraph.org/entityfacts/118577182 | 811           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100001467 | 725           |
-| 100 | 200              | EF2SO   | https://hub.culturegraph.org/entityfacts/100014704 | 861           |
+| %   | HTTP Status Code | Service | URL                                               | LoadTime (ms) |
+|-----|------------------|---------|---------------------------------------------------|---------------|
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100025250 | 520           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000193 | 472           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001394 | 555           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000355 | 483           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/140585524 | 569           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100054102 | 659           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118577182 | 543           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100014704 | 601           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118540238 | 629           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118505556 | 589           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/106220063 | 659           |
+| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001467 | 600           |
+| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/118505556           | 719           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100000355           | 752           |
+| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/140585524           | 854           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100001394           | 777           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/106220063           | 736           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100000193           | 775           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/118540238           | 673           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100054102           | 736           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100025250           | 768           |
+| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/118577182           | 811           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100001467           | 725           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100014704           | 861           |
+
