@@ -4,7 +4,7 @@ COPY pom.xml /tmp/
 COPY setenv.sh /tmp/
 COPY src /tmp/src/
 WORKDIR /tmp/
-RUN sed -i 's#<url-pattern>/*</url-pattern>#<url-pattern>${URLPATTERN}</url-pattern>#' src/main/webapp/WEB-INF/web.xml
+RUN sed -i 's#<url-pattern>/\*</url-pattern>#<url-pattern>${URLPATTERN}</url-pattern>#' src/main/webapp/WEB-INF/web.xml
 RUN mvn package
 
 FROM tomcat:jdk15-openjdk-slim-buster

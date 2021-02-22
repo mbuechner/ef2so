@@ -30,6 +30,6 @@ limitations under the License.
     </servlet>
     <servlet-mapping>
         <servlet-name>EF2SO</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>${URLPATTERN}</url-pattern>
     </servlet-mapping>
 </web-app>
