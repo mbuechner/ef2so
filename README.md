@@ -73,7 +73,7 @@ First, that depends on your webserver of course! A non-representative benchmark 
 - Entity Facts: avg. 573.25ms
 
 | %   | HTTP Status Code | Service | URL                                                | LoadTime (ms) |
-|--:--|--:---------------|---------|----------------------------------------------------|--:------------|
+|-----|------------------|---------|----------------------------------------------------|---------------|
 | 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100025250  | 520           |
 | 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000193  | 472           |
 | 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001394  | 555           |
