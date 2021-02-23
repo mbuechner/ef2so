@@ -15,7 +15,7 @@ COPY --from=MAVEN_CHAIN /tmp/target/ef2so.war ${CATALINA_HOME}/webapps/ROOT.war
 COPY --from=MAVEN_CHAIN /tmp/setenv.sh ${CATALINA_HOME}/bin/
 RUN groupadd -r ${RUN_GROUP} && useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /bin/bash ${RUN_USER}
 RUN chown -R ${RUN_USER}:${RUN_GROUP} ${CATALINA_HOME}
-RUN chmod -R 775 ${CATALINA_HOME}/webapps
+RUN chmod -R 777 ${CATALINA_HOME}/webapps
 RUN apt-get update && apt-get install -y apt-utils wget
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
