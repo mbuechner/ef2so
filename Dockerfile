@@ -10,7 +10,7 @@ RUN mvn package
 FROM tomcat:jdk15-openjdk-slim-buster
 MAINTAINER Michael Büchner <m.buechner@dnb.de>
 ENV RUN_USER tomcat
-ENV RUN_GROUP tomcat
+ENV RUN_GROUP 0
 COPY --from=MAVEN_CHAIN /tmp/target/ef2so.war ${CATALINA_HOME}/webapps/ROOT.war
 COPY --from=MAVEN_CHAIN /tmp/setenv.sh ${CATALINA_HOME}/bin/
 RUN groupadd -r ${RUN_GROUP} && useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /bin/bash ${RUN_USER}
