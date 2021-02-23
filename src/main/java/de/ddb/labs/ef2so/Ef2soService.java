@@ -114,7 +114,7 @@ public class Ef2soService {
                     .entity(result)
                     .build();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error(e.getLocalizedMessage(), e);
             return Response
                     .status(500)
