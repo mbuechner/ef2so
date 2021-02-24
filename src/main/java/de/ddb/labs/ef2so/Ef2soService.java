@@ -75,9 +75,11 @@ public class Ef2soService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {
         try {
-
+            if (idn.isBlank()) {
+                throw new InvalidParameterException("No IDN passed");
+            }
             if (!gndIdnPattern.matcher(idn).matches()) {
-                throw new InvalidParameterException("Invalid IDN given.");
+                throw new InvalidParameterException("Invalid IDN passed");
             }
             LOG.info("Execute request for IDN '{}'...", idn);
             final URL url = new URL(EF_URL + idn);
@@ -105,7 +107,7 @@ public class Ef2soService {
             if (result.isEmpty()) {
                 return Response
                         .status(501)
-                        .entity("{\"Error\":\"Requested resource '" + idn + "' NOT supported by Schema.org.\"}")
+                        .entity("{\"Error\":\"Requested resource '" + idn + "' is NOT supported by Schema.org\"}")
                         .build();
             }
 
@@ -115,7 +117,7 @@ public class Ef2soService {
                     .build();
 
         } catch (Exception e) {
-            LOG.error(e.getLocalizedMessage(), e);
+            LOG.error(e.getMessage(), e);
             return Response
                     .status(500)
                     .entity("{\"Error\":\"" + e.getMessage() + "\"}")
