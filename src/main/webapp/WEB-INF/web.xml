@@ -27,6 +27,10 @@ limitations under the License.
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>de.ddb.labs.ef2so</param-value>
         </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>de.ddb.labs.ef2so.filter.CORSFilter</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>EF2SO</servlet-name>
