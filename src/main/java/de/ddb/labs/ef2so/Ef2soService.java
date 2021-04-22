@@ -15,6 +15,7 @@
  */
 package de.ddb.labs.ef2so;
 
+import de.ddb.labs.ef2so.filter.Compress;
 import de.ddb.labs.ef2so.processor.Processor;
 import de.ddb.labs.ef2so.processor.ProcessorFactory;
 import java.io.BufferedReader;
@@ -49,8 +50,9 @@ public class Ef2soService {
     private static final String GND_IDN_PATTERN = "(1[012]?\\d{7}[0-9X]|[47]\\d{6}-\\d|[1-9]\\d{0,7}-[0-9X]|3\\d{7}[0-9X])";
     private final Pattern gndIdnPattern = Pattern.compile(GND_IDN_PATTERN);
 
-    // @Context
-    // private UriInfo context;
+    public Ef2soService() {
+    }
+    
     /**
      * Root entry point without IDN
      *
@@ -71,6 +73,7 @@ public class Ef2soService {
      * @return
      */
     @GET
+    @Compress
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {
@@ -79,7 +82,7 @@ public class Ef2soService {
                 throw new InvalidParameterException("No IDN passed");
             }
             if (!gndIdnPattern.matcher(idn).matches()) {
-                throw new InvalidParameterException("Invalid IDN passed");
+                throw new InvalidParameterException("Invalid IDN passed: '" + idn + "'");
             }
             LOG.info("Execute request for IDN '{}'...", idn);
             final URL url = new URL(EF_URL + idn);
@@ -116,6 +119,12 @@ public class Ef2soService {
                     .entity(result)
                     .build();
 
+        } catch (InvalidParameterException e) {
+            LOG.warn(e.getMessage());
+            return Response
+                    .status(500)
+                    .entity("{\"Error\":\"" + e.getMessage() + "\"}")
+                    .build();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return Response

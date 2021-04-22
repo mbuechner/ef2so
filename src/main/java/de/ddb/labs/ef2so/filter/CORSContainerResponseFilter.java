@@ -26,7 +26,7 @@ import javax.ws.rs.ext.Provider;
  * @author Michael Büchner <m.buechner@dnb.de>
  */
 @Provider
-public class CORSFilter implements ContainerResponseFilter {
+public class CORSContainerResponseFilter implements ContainerResponseFilter {
 
     /**
      * Adds a CORS header the all responses
@@ -36,7 +36,7 @@ public class CORSFilter implements ContainerResponseFilter {
      * @throws java.io.IOException
      */
     @Override
-    public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
+    public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {    
         
         String allowOrigin = "*";
         if (request.getHeaderString("Origin") != null && !request.getHeaderString("Origin").isEmpty()) {
@@ -44,7 +44,7 @@ public class CORSFilter implements ContainerResponseFilter {
         }
 
         response.getHeaders().add("Access-Control-Allow-Origin", allowOrigin);
-        response.getHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
+        response.getHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept");
         response.getHeaders().add("Access-Control-Allow-Methods", "GET");
     }
 }
