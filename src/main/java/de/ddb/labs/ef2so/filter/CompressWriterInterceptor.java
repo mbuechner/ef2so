@@ -52,8 +52,8 @@ public class CompressWriterInterceptor implements WriterInterceptor {
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
 
         try {
-            if (headers.getHeaderString("Content-Encoding") != null) {
-                final List<String> list = Arrays.asList(headers.getHeaderString("Content-Encoding").split("\\s*,\\s*"));
+            if (headers.getHeaderString("Accept-Encoding") != null) {
+                final List<String> list = Arrays.asList(headers.getHeaderString("Accept-Encoding").split("\\s*,\\s*"));
                 final OutputStream outputStream = context.getOutputStream();
 
                 if (list.contains("br")) {
