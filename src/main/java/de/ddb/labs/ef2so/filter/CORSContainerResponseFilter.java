@@ -44,7 +44,7 @@ public class CORSContainerResponseFilter implements ContainerResponseFilter {
         }
 
         response.getHeaders().add("Access-Control-Allow-Origin", allowOrigin);
-        response.getHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept");
+        response.getHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Accept-Encoding");
         response.getHeaders().add("Access-Control-Allow-Methods", "GET");
     }
 }
