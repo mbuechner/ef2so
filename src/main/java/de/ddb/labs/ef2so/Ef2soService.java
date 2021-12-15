@@ -140,21 +140,19 @@ public class Ef2soService {
      * @param is Input as InputString
      * @param charset Charset ("UTF-8")
      * @return String with content
-     * @throws IOException
+     * @throws java.io.IOException
      */
     public static String inputStreamToString(final InputStream is, final String charset) throws IOException {
-        if (is != null) {
-            try (is;  BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)))) {
-                final StringBuilder sb = new StringBuilder();
-                int value;
-                while ((value = br.read()) != -1) {
-                    sb.append((char) value);
-                }
-                return sb.toString();
-            } catch (Exception e) {
-                return "";
-            }
+        if (is == null) {
+            return "";
         }
-        return "";
+        try (is;  BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)))) {
+            final StringBuilder sb = new StringBuilder();
+            int value;
+            while ((value = br.read()) != -1) {
+                sb.append((char) value);
+            }
+            return sb.toString();
+        }
     }
 }

@@ -24,6 +24,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
 import org.metafacture.metamorph.Metamorph;
@@ -69,7 +71,7 @@ public class MetamorphMain {
         System.out.println("---");
     }
 
-    private static String inputStreamToString(InputStream is, String charsetName) throws IOException {
+    private static String inputStreamToString(InputStream is, String charsetName) {
         try (is; final BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(charsetName)))) {
             final StringBuilder stringBuffer = new StringBuilder();
             int value;
@@ -77,6 +79,8 @@ public class MetamorphMain {
                 stringBuffer.append((char) value);
             }
             return stringBuffer.toString();
+        } catch (IOException ex) {
+            return "";
         }
     }
 }
