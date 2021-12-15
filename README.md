@@ -1,4 +1,4 @@
-![Java CI with Maven](https://github.com/mbuechner/ef2so/workflows/Java%20CI%20with%20Maven/badge.svg) ![Docker](https://github.com/mbuechner/ef2so/workflows/Docker/badge.svg) ![Sonar](https://github.com/mbuechner/ef2so/workflows/Sonar/badge.svg)
+![Java CI with Maven](https://github.com/mbuechner/ef2so/workflows/Java%20CI%20with%20Maven/badge.svg) ![Docker](https://github.com/mbuechner/ef2so/workflows/Docker/badge.svg)
 # EF2SO - An Entity Facts-To-Schema.org Converter
 This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Schema.org](https://schema.org/) Converter. That means, that the transformation work will be done in the moment of access! URL schema is `http://www.example.org/yourpath/{GND-IDN}`.
 
@@ -23,9 +23,9 @@ Thanks to  [Jana Hentschke](https://twitter.com/junicatalo) for providing the co
 5. Open Browser, if you're running a local [Tomcat](http://tomcat.apache.org/): http://localhost:8080/118540238
 
 # Docker
-Yes, there's a docker container for EF2SO available at DockerHub. See https://hub.docker.com/r/mbuechner/ef2so
+Yes, there's a docker container for EF2SO available at GitHub. See https://github.com/mbuechner?tab=packages&repo_name=ef2so
 ```
-docker pull mbuechner/ef2so
+docker pull ghcr.io/mbuechner/ef2so/ef2so:latest
 ```
 ## Container build
 1. Checkout GitHub repository: `git clone https://github.com/mbuechner/ef2so`
@@ -74,28 +74,27 @@ First, that depends on your webserver of course! A non-representative benchmark 
 
 | %   | HTTP Status Code | Service | URL                                               | LoadTime (ms) |
 |-----|------------------|---------|---------------------------------------------------|---------------|
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100025250 | 520           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000193 | 472           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001394 | 555           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100000355 | 483           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/140585524 | 569           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100054102 | 659           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118577182 | 543           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100014704 | 601           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118540238 | 629           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/118505556 | 589           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/106220063 | 659           |
-| 100 | 200              | EF      | http://hub.culturegraph.org/entityfacts/100001467 | 600           |
-| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/118505556           | 719           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100000355           | 752           |
-| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/140585524           | 854           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100001394           | 777           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/106220063           | 736           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100000193           | 775           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/118540238           | 673           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100054102           | 736           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100025250           | 768           |
-| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/118577182           | 811           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100001467           | 725           |
-| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100014704           | 861           |
-
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100025250 | 520           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100000193 | 472           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100001394 | 555           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100000355 | 483           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/140585524 | 569           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100054102 | 659           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/118577182 | 543           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100014704 | 601           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/118540238 | 629           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/118505556 | 589           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/106220063 | 659           |
+| 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100001467 | 600           |
+| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/118505556            | 719           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100000355            | 752           |
+| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/140585524            | 854           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100001394            | 777           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/106220063            | 736           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100000193            | 775           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/118540238            | 673           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100054102            | 736           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100025250            | 768           |
+| 100 | 501              | EF2SO   | https://labs.ddb.de/app/ef2so/118577182            | 811           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100001467            | 725           |
+| 100 | 200              | EF2SO   | https://labs.ddb.de/app/ef2so/100014704            | 861           |
