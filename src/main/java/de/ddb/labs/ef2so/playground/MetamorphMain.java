@@ -70,16 +70,13 @@ public class MetamorphMain {
     }
 
     private static String inputStreamToString(InputStream is, String charsetName) throws IOException {
-        try {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(charsetName)));
+        try (is; final BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(charsetName)))) {
             final StringBuilder stringBuffer = new StringBuilder();
             int value;
             while ((value = reader.read()) != -1) {
                 stringBuffer.append((char) value);
             }
             return stringBuffer.toString();
-        } finally {
-            is.close();
         }
     }
 }

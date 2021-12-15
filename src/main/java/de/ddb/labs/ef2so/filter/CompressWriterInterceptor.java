@@ -23,12 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.WriterInterceptor;
-import javax.ws.rs.ext.WriterInterceptorContext;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.ext.WriterInterceptorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

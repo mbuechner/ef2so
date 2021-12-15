@@ -158,27 +158,18 @@ public final class JsonDecoder extends DefaultObjectPipe<String, StreamReceiver>
 
     private void decodeValue(final String name, final JsonToken token) throws IOException {
         switch (token) {
-            case START_OBJECT:
+            case START_OBJECT -> {
                 getReceiver().startEntity(name);
                 decodeObject();
                 getReceiver().endEntity();
-
-                break;
-            case START_ARRAY:
+            }
+            case START_ARRAY -> {
                 getReceiver().startEntity(name + arrayMarker);
                 decodeArray();
                 getReceiver().endEntity();
-
-                break;
-            case VALUE_NULL:
-                getReceiver().literal(name, null);
-
-                break;
-            default:
-                getReceiver().literal(name, jsonParser.getText());
-
-                break;
+            }
+            case VALUE_NULL -> getReceiver().literal(name, null);
+            default -> getReceiver().literal(name, jsonParser.getText());
         }
     }
-
 }

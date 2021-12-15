@@ -27,14 +27,14 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class Ef2soService {
 
     public Ef2soService() {
     }
-    
+
     /**
      * Root entry point without IDN
      *
@@ -144,16 +144,15 @@ public class Ef2soService {
      */
     public static String inputStreamToString(final InputStream is, final String charset) throws IOException {
         if (is != null) {
-            try {
-                final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)));
+            try (is;  BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)))) {
                 final StringBuilder sb = new StringBuilder();
                 int value;
                 while ((value = br.read()) != -1) {
                     sb.append((char) value);
                 }
                 return sb.toString();
-            } finally {
-                is.close();
+            } catch (Exception e) {
+                return "";
             }
         }
         return "";

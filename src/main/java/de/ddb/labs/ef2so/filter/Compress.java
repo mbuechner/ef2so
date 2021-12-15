@@ -17,7 +17,7 @@ package de.ddb.labs.ef2so.filter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import javax.ws.rs.NameBinding;
+import jakarta.ws.rs.NameBinding;
 
 /**
  *

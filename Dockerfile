@@ -1,4 +1,4 @@
-FROM maven:3-openjdk-15 AS MAVEN_CHAIN
+FROM maven:3-openjdk-17-slim AS MAVEN_CHAIN
 MAINTAINER Michael Büchner <m.buechner@dnb.de>
 COPY pom.xml /tmp/
 COPY setenv.sh /tmp/
@@ -7,7 +7,7 @@ WORKDIR /tmp/
 RUN sed -i 's#<url-pattern>/\*</url-pattern>#<url-pattern>${URLPATTERN}</url-pattern>#' src/main/webapp/WEB-INF/web.xml
 RUN mvn package
 
-FROM tomcat:jdk15-openjdk-slim-buster
+FROM tomcat:10-jdk17-openjdk-slim-buster
 MAINTAINER Michael Büchner <m.buechner@dnb.de>
 ENV RUN_USER tomcat
 ENV RUN_GROUP 0
