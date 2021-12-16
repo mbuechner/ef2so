@@ -10,11 +10,11 @@ FROM tomcat:10-jdk17-openjdk-slim-buster
 MAINTAINER Michael Büchner <m.buechner@dnb.de>
 ENV RUN_USER tomcat
 ENV RUN_GROUP 0
+RUN groupadd -r ${RUN_GROUP}; \
+  useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /bin/bash ${RUN_USER};
 COPY --from=MAVEN_CHAIN --chown=${RUN_USER}:${RUN_GROUP} /tmp/target/ef2so.war ${CATALINA_HOME}/webapps/ROOT.war
 COPY --from=MAVEN_CHAIN --chown=${RUN_USER}:${RUN_GROUP} /tmp/setenv.sh ${CATALINA_HOME}/bin/
-RUN groupadd -r ${RUN_GROUP}; \
-  useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /bin/bash ${RUN_USER}; \
-  mkdir -p /usr/local/tomcat/conf/Catalina/localhost; \
+RUN mkdir -p /usr/local/tomcat/conf/Catalina/localhost; \
   chown -R ${RUN_USER}:${RUN_GROUP} ${CATALINA_HOME}; \
   chmod -R 777 ${CATALINA_HOME}/webapps /usr/local/tomcat/conf/Catalina; \
   apt-get update && apt-get install -y wget && apt-get clean && rm -rf /var/lib/apt/lists/*;
