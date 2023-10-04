@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2023 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class Ef2soService {
 
     private static final Logger LOG = LoggerFactory.getLogger(Ef2soService.class);
-    private static final String EF_URL = "http://hub.culturegraph.org/entityfacts/";
+    private static final String EF_URL = "https://hub.culturegraph.org/entityfacts/";
     private static final String GND_IDN_PATTERN = "(1[012]?\\d{7}[0-9X]|[47]\\d{6}-\\d|[1-9]\\d{0,7}-[0-9X]|3\\d{7}[0-9X])";
     private final Pattern gndIdnPattern = Pattern.compile(GND_IDN_PATTERN);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2023 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
 import org.metafacture.metamorph.Metamorph;
@@ -41,9 +39,9 @@ public class MetamorphMain {
     private static final String MORPH_TRANS_SCRIPT = "ef2so_transformation.xml";
 
     public static void main(String[] args) throws MalformedURLException, IOException {
-        // final URL url = new URL("http://hub.culturegraph.org/entityfacts/133070557"); // Familie
-        // final URL url = new URL("http://hub.culturegraph.org/entityfacts/9776-7");
-        final URL url = new URL("http://hub.culturegraph.org/entityfacts/118540238"); // Goethe
+        // final URL url = new URL("https://hub.culturegraph.org/entityfacts/133070557"); // Familie
+        // final URL url = new URL("https://hub.culturegraph.org/entityfacts/9776-7");
+        final URL url = new URL("https://hub.culturegraph.org/entityfacts/118540238"); // Goethe
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.addRequestProperty("Accept-Language", "en");
 
