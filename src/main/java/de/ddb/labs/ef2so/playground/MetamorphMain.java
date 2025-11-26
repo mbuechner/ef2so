@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2023 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import org.metafacture.json.JsonEncoder;
@@ -41,7 +42,7 @@ public class MetamorphMain {
     public static void main(String[] args) throws MalformedURLException, IOException {
         // final URL url = new URL("https://hub.culturegraph.org/entityfacts/133070557"); // Familie
         // final URL url = new URL("https://hub.culturegraph.org/entityfacts/9776-7");
-        final URL url = new URL("https://hub.culturegraph.org/entityfacts/118540238"); // Goethe
+        final URL url = URI.create("https://hub.culturegraph.org/entityfacts/118540238").toURL(); // Goethe
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.addRequestProperty("Accept-Language", "en");
 
@@ -49,7 +50,7 @@ public class MetamorphMain {
         final Metamorph trans = new Metamorph(MORPH_TRANS_SCRIPT);
         final JsonEncoder jsonEncoder = new JsonEncoder();
         // final StreamLogger logger = new StreamLogger();
-        jsonEncoder.setPrettyPrinting(true);
+        // jsonEncoder.setPrettyPrinting(true);
 
         final JsonDecoder myjsonDecoder = new JsonDecoder();
         final StringConcatenator stringConcatenator = new StringConcatenator();

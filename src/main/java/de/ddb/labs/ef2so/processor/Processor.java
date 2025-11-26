@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2023 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class Processor {
         this.trans = new Metamorph(MORPH_TRANS_SCRIPT);
         this.filter = new Filter(MORPH_FILTER_SCRIPT);
         this.jsonEncoder = new JsonEncoder();
-        this.jsonEncoder.setPrettyPrinting(true);
+        // this.jsonEncoder.setPrettyPrinting(true);
 
         this.myjsonDecoder = new JsonDecoder();
         this.stringConcatenator = new StringConcatenator();

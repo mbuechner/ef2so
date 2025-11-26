@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2023 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
@@ -85,7 +86,7 @@ public class Ef2soService {
                 throw new InvalidParameterException("Invalid IDN passed: '" + idn + "'");
             }
             LOG.info("Execute request for IDN '{}'...", idn);
-            final URL url = new URL(EF_URL + idn);
+            final URL url = URI.create(EF_URL + idn).toURL();
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.addRequestProperty("Accept-Language", "en");
 
