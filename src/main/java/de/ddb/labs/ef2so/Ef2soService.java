@@ -16,6 +16,7 @@
 package de.ddb.labs.ef2so;
 
 import de.ddb.labs.ef2so.filter.Compress;
+import de.ddb.labs.ef2so.filter.ETag;
 import de.ddb.labs.ef2so.processor.Processor;
 import de.ddb.labs.ef2so.processor.ProcessorFactory;
 import java.io.BufferedReader;
@@ -75,6 +76,7 @@ public class Ef2soService {
      */
     @GET
     @Compress
+    @ETag
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {

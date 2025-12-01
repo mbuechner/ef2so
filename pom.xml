@@ -103,6 +103,12 @@
             <artifactId>jvmbrotli</artifactId>
             <version>0.2.0</version>
         </dependency>
+        <!-- Fast streaming xxhash via maintained lz4-java (keeps net.jpountz.* packages) -->
+        <dependency>
+            <groupId>org.lz4</groupId>
+            <artifactId>lz4-pure-java</artifactId>
+            <version>1.8.0</version>
+        </dependency>
     </dependencies>
     <reporting>
         <plugins>
@@ -202,6 +208,3 @@
         <finalName>ef2so</finalName>
     </build>
 </project>
-
-
-
