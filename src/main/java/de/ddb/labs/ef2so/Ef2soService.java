@@ -16,10 +16,10 @@
 package de.ddb.labs.ef2so;
 
 import de.ddb.labs.ef2so.filter.Compress;
-import de.ddb.labs.ef2so.filter.ETag;
 import de.ddb.labs.ef2so.processor.Processor;
 import de.ddb.labs.ef2so.processor.ProcessorFactory;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,15 +28,22 @@ import java.net.URL;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.InvalidParameterException;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.EntityTag;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
+import net.jpountz.xxhash.StreamingXXHash64;
+import net.jpountz.xxhash.XXHashFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +58,13 @@ public class Ef2soService {
     private static final String EF_URL = "https://hub.culturegraph.org/entityfacts/";
     private static final String GND_IDN_PATTERN = "(1[012]?\\d{7}[0-9X]|[47]\\d{6}-\\d|[1-9]\\d{0,7}-[0-9X]|3\\d{7}[0-9X])";
     private final Pattern gndIdnPattern = Pattern.compile(GND_IDN_PATTERN);
+    private static final XXHashFactory XX = XXHashFactory.fastestInstance();
+    private static final long SEED = 0L;
+    private static final CacheControl cc = new CacheControl();
 
     public Ef2soService() {
+        cc.setMaxAge(86400); // Sekunden
+        cc.setPrivate(false); // entspricht "public" (nicht "private")
     }
 
     /**
@@ -63,23 +75,22 @@ public class Ef2soService {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRoot(@Context HttpHeaders headers) {
-        return get(headers, "");
+    public Response getRoot(@Context Request request, @Context HttpHeaders headers) {
+        return get(request, headers, "");
     }
 
     /**
      * Entry point with IDN
      *
      * @param headers HTTP Request Header
-     * @param idn IDN, the number from GND-URI
+     * @param idn     IDN, the number from GND-URI
      * @return
      */
     @GET
     @Compress
-    @ETag
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Context HttpHeaders headers, @PathParam("idn") String idn) {
+    public Response get(@Context Request request, @Context HttpHeaders headers, @PathParam("idn") String idn) {
         try {
             if (idn.isBlank()) {
                 throw new InvalidParameterException("No IDN passed");
@@ -117,9 +128,28 @@ public class Ef2soService {
                         .build();
             }
 
-            return Response
-                    .status(200)
-                    .entity(result)
+            final byte[] hashData = result.getBytes("UTF-8");
+            final ByteArrayInputStream in = new ByteArrayInputStream(hashData);
+            final StreamingXXHash64 hash64 = XX.newStreamingHash64(SEED);
+
+            final byte[] buf = new byte[8192];
+            for (;;) {
+                int read = in.read(buf);
+                if (read == -1) {
+                    break;
+                }
+                hash64.update(buf, 0, read);
+            }
+            final long hash = hash64.getValue();
+            final String tagValue = String.format(Locale.ROOT, "%016x", hash);
+
+            final EntityTag tag = new EntityTag(tagValue);
+            final Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
+            if (rb != null) return rb.cacheControl(cc).tag(tag).build();
+
+            return Response.ok(result, MediaType.APPLICATION_JSON)
+                    .cacheControl(cc)
+                    .tag(tag)
                     .build();
 
         } catch (InvalidParameterException e) {
@@ -140,7 +170,7 @@ public class Ef2soService {
     /**
      * Converts a InputString to a String
      *
-     * @param is Input as InputString
+     * @param is      Input as InputString
      * @param charset Charset ("UTF-8")
      * @return String with content
      * @throws java.io.IOException
@@ -149,7 +179,7 @@ public class Ef2soService {
         if (is == null) {
             return "";
         }
-        try (is;  BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)))) {
+        try (is; BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)))) {
             final StringBuilder sb = new StringBuilder();
             int value;
             while ((value = br.read()) != -1) {

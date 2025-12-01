@@ -19,6 +19,7 @@ import java.io.IOException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
 
 /**
@@ -43,8 +44,9 @@ public class CORSContainerResponseFilter implements ContainerResponseFilter {
             allowOrigin = request.getHeaderString("Origin");
         }
 
-        response.getHeaders().add("Access-Control-Allow-Origin", allowOrigin);
-        response.getHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Accept-Encoding");
-        response.getHeaders().add("Access-Control-Allow-Methods", "GET");
+        final MultivaluedMap <String, Object> headers = response.getHeaders();
+        headers.add("Access-Control-Allow-Origin", allowOrigin);
+        headers.add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Accept-Encoding");
+        headers.add("Access-Control-Allow-Methods", "GET");
     }
 }
