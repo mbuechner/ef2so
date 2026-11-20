@@ -16,25 +16,32 @@ This is an on-demand [Entity Facts](http://www.dnb.de/entityfacts) (EF) to [Sche
 Thanks to  [Jana Hentschke](https://twitter.com/junicatalo) for providing the conceptual mapping (Entity Facts data model to Schema.org data model).
 
 # Compile & Deploy
-1. Download Maven Project from this repository.
-2. Install [Maven](https://maven.apache.org/) project management tool.
-3. Run in the folder with `pom.xml` the following command: `mvn clean package`
-4. Take `target\ef2so.war`and deploy it on your web server.
-5. Open Browser, if you're running a local [Tomcat](http://tomcat.apache.org/): http://localhost:8080/118540238
+1. Clone this repository and install [Amazon Corretto 25 LTS](https://aws.amazon.com/corretto/) and [Maven 3](https://maven.apache.org/).
+2. Run `mvn clean verify` in the directory containing `pom.xml`.
+3. Deploy `target/ef2so.war` to [Tomcat 11](https://tomcat.apache.org/) running Java 25. Add `--enable-native-access=ALL-UNNAMED` to `CATALINA_OPTS` to enable Brotli's native library without Java 25 warnings.
+4. Open http://localhost:8080/ef2so/118540238. Deploy the file as `ROOT.war` to serve it at http://localhost:8080/118540238.
+
+## Project reports
+
+GitHub Actions builds and publishes the [Maven project reports](https://mbuechner.github.io/ef2so/) on pushes to `master`. Run `mvn verify site` to generate them locally and open `target/site/index.html`.
 
 # Docker
-Yes, there's a docker container for EF2SO available at GitHub. See https://github.com/mbuechner?tab=packages&repo_name=ef2so
+
+```sh
+docker run --rm -p 8080:8080 ghcr.io/mbuechner/ef2so:latest
 ```
-docker pull ghcr.io/mbuechner/ef2so/ef2so:latest
-```
-## Container build
-1. Checkout GitHub repository: `git clone https://github.com/mbuechner/ef2so`
-2. Go into folder: `cd ef2so`
-3. Run `docker build -t ef2so .`
-4. Start container with: `docker run -d -p 8080:8080 -P ef2so`
-5. Open browser: http://localhost:8080/118540238
- 
-Note: The container is listen on port 8080. If you need a path prefix start container e.g. with `docker run -d -p 8080:8080 -P --env "URLPATTERN=/foo/bar/*" ef2so` and application will be available under http://localhost:8080/foo/bar/118540238
+
+EF2SO serves `http://localhost:8080/118540238`. For a prefix, pass `--env "URLPATTERN=/foo/bar/*"` to serve it at `http://localhost:8080/foo/bar/118540238`. The image runs Tomcat on port 8080 as UID 1001 in group 0, which supports OpenShift's assigned UIDs. Use `docker build --pull -t ef2so .` for a local build with the current Tomcat 11 and Corretto 25 base images.
+
+## Container releases
+
+- **Release.** Publish a stable `v*` release from a commit containing the [Docker workflow](.github/workflows/docker-publish.yml). The publisher runs on `master` and builds `linux/amd64` from the tagged source and Dockerfile.
+- **Daily at 08:17 Berlin time.** A changed Git SHA, changed base digest or missing version tag triggers a rebuild. Otherwise, the published digest gets a fresh scan.
+- **Promote.** HTTP, image and optional SBOM checks gate Cosign signing and version tagging. Fixable High or Critical CVEs block promotion. The maintained release also gets `latest` and `tagged`.
+
+The latest stable release is maintained by default. Set `CONTAINER_RELEASE_TAG` to pin that choice, or use **Actions → Docker → Run workflow** on `master` with a `release_tag` for a one-off run.
+
+Grant Actions write access to the GHCR package. The probe defaults to `OPTIONS /` on port 8080. Configure it with `CONTAINER_HTTP_{METHOD,PATH,STATUS}` and pass container environment variables via `CONTAINER_ENV`.
 
 # How to use it on your website?
 See [Google's documentation](https://developers.google.com/search/docs/guides/intro-structured-data). It's better to dynamically inject the Schema.org-JSON-LD, than waiting for the service. Google does support that! It's basically:
@@ -72,8 +79,8 @@ First, that depends on your webserver of course! A non-representative benchmark 
 - EF2SO: avg. 765.58ms
 - Entity Facts: avg. 573.25ms
 
-| %   | HTTP Status Code | Service | URL                                               | LoadTime (ms) |
-|-----|------------------|---------|---------------------------------------------------|---------------|
+| %   | HTTP Status Code | Service | URL                                                | LoadTime (ms) |
+| --- | ---------------- | ------- | -------------------------------------------------- | ------------- |
 | 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100025250 | 520           |
 | 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100000193 | 472           |
 | 100 | 200              | EF      | https://hub.culturegraph.org/entityfacts/100001394 | 555           |
