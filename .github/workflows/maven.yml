@@ -45,3 +45,9 @@ jobs:
           cache-read-only: true
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c # v6.0.1
+        # Replace the legacy snapshot that used an absolute runner path for pom.xml.
+        with:
+          correlator: build
+          detector-name: maven-dependency-tree-action
+          detector-url: https://github.com/advanced-security/maven-dependency-submission-action
+          detector-version: '6.0.1'
