@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +40,11 @@ public class ProcessorFactory {
     }
 
     private ProcessorFactory() {
-        LOG.info("Initializing pool with {} processors...", MAX_POOL_SIZE);
-        for (int i = 0; i < MAX_POOL_SIZE; ++i) {
-            idleProcessors.add(new Processor());
-        }
-        LOG.info("Done initializing pool.");
+        final long started = System.nanoTime();
+        // Validate the transformation at startup and create more processors as needed.
+        idleProcessors.add(new Processor());
+        LOG.info("Processor pool ready in {} ms (capacity {})",
+                TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started), MAX_POOL_SIZE);
     }
 
     public Optional<String> tryProcess(final String input) {

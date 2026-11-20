@@ -18,7 +18,7 @@ Thanks to  [Jana Hentschke](https://twitter.com/junicatalo) for providing the co
 # Compile & Deploy
 1. Clone this repository and install [Amazon Corretto 25 LTS](https://aws.amazon.com/corretto/) and [Maven 3](https://maven.apache.org/).
 2. Run `mvn clean verify` in the directory containing `pom.xml`.
-3. Deploy `target/ef2so.war` to [Tomcat 11](https://tomcat.apache.org/) running Java 25. Add `--enable-native-access=ALL-UNNAMED` to `CATALINA_OPTS` to enable Brotli's native library without Java 25 warnings.
+3. Deploy `target/ef2so.war` to [Tomcat 11](https://tomcat.apache.org/) running Java 25.
 4. Open http://localhost:8080/ef2so/118540238. Deploy the file as `ROOT.war` to serve it at http://localhost:8080/118540238.
 
 ## Project reports
@@ -32,6 +32,32 @@ docker run --rm -p 8080:8080 ghcr.io/mbuechner/ef2so:latest
 ```
 
 EF2SO serves `http://localhost:8080/118540238`. For a prefix, pass `--env "URLPATTERN=/foo/bar/*"` to serve it at `http://localhost:8080/foo/bar/118540238`. The image runs Tomcat on port 8080 as UID 1001 in group 0, which supports OpenShift's assigned UIDs. Use `docker build --pull -t ef2so .` for a local build with the current Tomcat 11 and Corretto 25 base images.
+
+## Logging
+
+Application logs go to the console. Set `EF2SO_LOG_LEVEL=DEBUG` for stack traces on upstream failures.
+
+Tomcat writes one JSON record per request to `$CATALINA_BASE/logs/ef2so_access.YYYY-MM-DD.jsonl`. It includes the Unix timestamp in milliseconds, client and connection-peer IPs, method, path, protocol, status, response bytes, duration in microseconds, User-Agent and response encoding. Query strings, cookies and authorization headers are omitted. Logs rotate daily. Set `EF2SO_ACCESS_LOG_MAX_DAYS` to override the 30-day retention, and mount `/opt/tomcat/logs` to keep the files across container replacements.
+
+Use `requestAttributes.requestId` to match a request to any associated console logs. EF2SO generates this ID. Tomcat records an incoming `X-Request-ID` separately under `requestHeaders`. The `failureReason` field distinguishes errors such as `invalid_idn`, `upstream_http`, `upstream_timeout` and `upstream_tls`. Requests rejected by Jersey or Tomcat outside EF2SO's error handling can be counted by HTTP status.
+
+List failed requests with their path, reason and correlation ID.
+
+```sh
+jq -c 'select((.statusCode | tonumber) >= 400) |
+  {status: (.statusCode | tonumber), path} +
+  (.requestAttributes | {requestId, failureReason})' "$CATALINA_BASE"/logs/ef2so_access.*.jsonl
+```
+
+Count failures by HTTP status and reason.
+
+```sh
+jq -r 'select((.statusCode | tonumber) >= 400) |
+  [.statusCode, .requestAttributes.failureReason] | @tsv' "$CATALINA_BASE"/logs/ef2so_access.*.jsonl |
+  sort | uniq -c | sort -nr
+```
+
+For traffic behind a reverse proxy, set `EF2SO_TRUSTED_PROXY_REGEX` to match only the immediate trusted proxy addresses and configure that proxy to replace untrusted `X-Forwarded-For` values. Without that setting, the client IP is the connection peer.
 
 ## Container releases
 

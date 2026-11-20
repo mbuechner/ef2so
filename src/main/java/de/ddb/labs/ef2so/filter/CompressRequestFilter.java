@@ -51,6 +51,7 @@ public class CompressRequestFilter implements ContainerRequestFilter, ContainerR
     public void filter(ContainerRequestContext requestContext) {
         final String chosen = selectEncoding(requestContext.getHeaderString(HttpHeaders.ACCEPT_ENCODING), ENCODINGS);
         if (chosen == null) {
+            requestContext.setProperty(RequestLoggingFilter.FAILURE_REASON, "encoding_not_acceptable");
             requestContext.abortWith(Response.status(Response.Status.NOT_ACCEPTABLE)
                     .header(HttpHeaders.VARY, HttpHeaders.ACCEPT_ENCODING)
                     .build());

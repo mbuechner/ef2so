@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <JarScanner>
+        <JarScanFilter defaultTldScan="false"/>
+    </JarScanner>
+
+    <Valve className="org.apache.catalina.valves.RemoteIpValve"
+           internalProxies="${EF2SO_TRUSTED_PROXY_REGEX:-(?!)}"
+           remoteIpHeader="X-Forwarded-For"/>
+    <Valve className="org.apache.catalina.valves.JsonAccessLogValve"
+           directory="logs"
+           prefix="ef2so_access"
+           suffix=".jsonl"
+           maxDays="${EF2SO_ACCESS_LOG_MAX_DAYS:-30}"
+           ipv6Canonical="true"
+           requestAttributesEnabled="true"
+           pattern="%{msec}t %a %{peer}a %m %U %H %s %B %D %X %I %{User-Agent}i %{X-Request-ID}i %{Content-Encoding}o %{requestId}r %{failureReason}r"/>
+</Context>

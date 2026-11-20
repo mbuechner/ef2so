@@ -16,7 +16,9 @@
 package de.ddb.labs.ef2so;
 
 import de.ddb.labs.ef2so.filter.Compress;
+import de.ddb.labs.ef2so.filter.RequestLoggingFilter;
 import de.ddb.labs.ef2so.processor.ProcessorFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -35,6 +37,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.regex.Pattern;
+import javax.net.ssl.SSLException;
 import net.jpountz.xxhash.XXHash64;
 import net.jpountz.xxhash.XXHashFactory;
 import org.metafacture.framework.MetafactureException;
@@ -60,12 +63,13 @@ public class Ef2soService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRoot() {
-        return error(Response.Status.BAD_REQUEST, "No IDN passed");
+    public Response getRoot(@Context HttpServletRequest servletRequest) {
+        return error(servletRequest, Response.Status.BAD_REQUEST, "missing_idn", "No IDN passed");
     }
 
     /**
      * @param request the current request, used to evaluate cache preconditions
+     * @param servletRequest the servlet request, used to report failures to the access log
      * @param idn the number from a GND URI
      * @return the converted record or an error
      */
@@ -73,9 +77,10 @@ public class Ef2soService {
     @Compress
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Context Request request, @PathParam("idn") String idn) {
+    public Response get(@Context Request request, @Context HttpServletRequest servletRequest,
+            @PathParam("idn") String idn) {
         if (!GND_IDN_PATTERN.matcher(idn).matches()) {
-            return error(Response.Status.BAD_REQUEST, "Invalid IDN passed");
+            return error(servletRequest, Response.Status.BAD_REQUEST, "invalid_idn", "Invalid IDN passed");
         }
 
         try {
@@ -89,7 +94,7 @@ public class Ef2soService {
 
                 final int status = conn.getResponseCode();
                 if (status != HttpURLConnection.HTTP_OK) {
-                    return upstreamResponse(conn, status);
+                    return upstreamResponse(servletRequest, conn, status);
                 }
                 input = readUtf8(conn.getInputStream());
             } finally {
@@ -98,25 +103,42 @@ public class Ef2soService {
 
             final var processed = ProcessorFactory.getInstance().tryProcess(input);
             if (processed.isEmpty()) {
-                return error(Response.Status.SERVICE_UNAVAILABLE, "No processor available");
+                return error(servletRequest, Response.Status.SERVICE_UNAVAILABLE, "processor_busy",
+                        "No processor available");
             }
             final String result = processed.get();
             if (result.isEmpty()) {
-                return error(Response.Status.NOT_IMPLEMENTED,
+                return error(servletRequest, Response.Status.NOT_IMPLEMENTED, "unsupported_entity_type",
                         "Requested resource '" + idn + "' is not supported by Schema.org");
             }
 
-            return cacheableResponse(request, result);
+            final Response response = cacheableResponse(request, result);
+            if (response.getStatus() == Response.Status.PRECONDITION_FAILED.getStatusCode()) {
+                servletRequest.setAttribute(RequestLoggingFilter.FAILURE_REASON, "precondition_failed");
+            }
+            return response;
         } catch (SocketTimeoutException e) {
-            LOG.warn("Entity Facts request timed out for IDN {}", idn, e);
-            return error(Response.Status.GATEWAY_TIMEOUT, "Entity Facts request timed out");
+            logUpstreamWarning("Entity Facts request timed out", idn, e);
+            return error(servletRequest, Response.Status.GATEWAY_TIMEOUT, "upstream_timeout",
+                    "Entity Facts request timed out");
         } catch (IOException | MetafactureException e) {
-            LOG.warn("Could not read or process Entity Facts for IDN {}", idn, e);
-            return error(Response.Status.BAD_GATEWAY, "Could not read or process Entity Facts");
+            logUpstreamWarning("Could not read or process Entity Facts", idn, e);
+            final String reason = switch (e) {
+                case SSLException ignored -> "upstream_tls";
+                case MetafactureException ignored -> "record_processing_error";
+                default -> "upstream_io";
+            };
+            return error(servletRequest, Response.Status.BAD_GATEWAY, reason, "Could not read or process Entity Facts");
         } catch (RuntimeException e) {
             LOG.error("Could not convert Entity Facts for IDN {}", idn, e);
-            return error(Response.Status.INTERNAL_SERVER_ERROR, "Could not convert Entity Facts");
+            return error(servletRequest, Response.Status.INTERNAL_SERVER_ERROR, "conversion_error",
+                    "Could not convert Entity Facts");
         }
+    }
+
+    private static void logUpstreamWarning(String message, String idn, Exception failure) {
+        LOG.warn("{} [idn={}, cause={}]", message, idn, failure.getClass().getSimpleName());
+        LOG.debug("Entity Facts failure details for IDN {}", idn, failure);
     }
 
     private static Response cacheableResponse(Request request, String result) {
@@ -132,8 +154,12 @@ public class Ef2soService {
         return response.cacheControl(cacheControl).tag(tag).build();
     }
 
-    private static Response upstreamResponse(HttpURLConnection conn, int status) throws IOException {
+    private static Response upstreamResponse(HttpServletRequest request, HttpURLConnection conn, int status)
+            throws IOException {
         final String body = readUtf8(conn.getErrorStream());
+        if (status >= 400) {
+            request.setAttribute(RequestLoggingFilter.FAILURE_REASON, "upstream_http");
+        }
         final Response.ResponseBuilder response = Response.status(status);
         if (!body.isEmpty()) {
             response.type(conn.getContentType()).entity(body);
@@ -150,7 +176,8 @@ public class Ef2soService {
         }
     }
 
-    private static Response error(Response.Status status, String message) {
+    private static Response error(HttpServletRequest request, Response.Status status, String reason, String message) {
+        request.setAttribute(RequestLoggingFilter.FAILURE_REASON, reason);
         final StringBuilder body = new StringBuilder("{\"Error\":\"");
         JsonStringEncoder.getInstance().quoteAsString(message, body);
         return Response.status(status).type(MediaType.APPLICATION_JSON)
