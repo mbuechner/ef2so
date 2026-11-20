@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2026 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,7 @@
 package de.ddb.labs.ef2so;
 
 import de.ddb.labs.ef2so.filter.Compress;
-import de.ddb.labs.ef2so.processor.Processor;
 import de.ddb.labs.ef2so.processor.ProcessorFactory;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.InvalidParameterException;
-import java.util.Locale;
-import java.util.regex.Pattern;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -37,15 +24,23 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.EntityTag;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
-import net.jpountz.xxhash.StreamingXXHash64;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
+import java.util.regex.Pattern;
+import net.jpountz.xxhash.XXHash64;
 import net.jpountz.xxhash.XXHashFactory;
-
+import org.metafacture.framework.MetafactureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.io.JsonStringEncoder;
 
 /**
  *
@@ -56,136 +51,110 @@ public class Ef2soService {
 
     private static final Logger LOG = LoggerFactory.getLogger(Ef2soService.class);
     private static final String EF_URL = "https://hub.culturegraph.org/entityfacts/";
-    private static final String GND_IDN_PATTERN = "(1[012]?\\d{7}[0-9X]|[47]\\d{6}-\\d|[1-9]\\d{0,7}-[0-9X]|3\\d{7}[0-9X])";
-    private final Pattern gndIdnPattern = Pattern.compile(GND_IDN_PATTERN);
-    private static final XXHashFactory XX = XXHashFactory.fastestInstance();
-    private static final long SEED = 0L;
-    private static final CacheControl cc = new CacheControl();
+    private static final Pattern GND_IDN_PATTERN =
+            Pattern.compile("(1[012]?\\d{7}[0-9X]|[47]\\d{6}-\\d|[1-9]\\d{0,7}-[0-9X]|3\\d{7}[0-9X])");
+    private static final XXHash64 HASH = XXHashFactory.safeInstance().hash64();
+    private static final int CONNECT_TIMEOUT_MS = 5_000;
+    private static final int READ_TIMEOUT_MS = 10_000;
+    private static final int CACHE_MAX_AGE_SECONDS = 86_400;
 
-    public Ef2soService() {
-        cc.setMaxAge(86400); // Sekunden
-        cc.setPrivate(false); // entspricht "public" (nicht "private")
-    }
-
-    /**
-     * Root entry point without IDN
-     *
-     * @param headers HTTP Request Header
-     * @return
-     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRoot(@Context Request request, @Context HttpHeaders headers) {
-        return get(request, headers, "");
+    public Response getRoot() {
+        return error(Response.Status.BAD_REQUEST, "No IDN passed");
     }
 
     /**
-     * Entry point with IDN
-     *
-     * @param headers HTTP Request Header
-     * @param idn     IDN, the number from GND-URI
-     * @return
+     * @param request the current request, used to evaluate cache preconditions
+     * @param idn the number from a GND URI
+     * @return the converted record or an error
      */
     @GET
     @Compress
     @Path("{idn}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Context Request request, @Context HttpHeaders headers, @PathParam("idn") String idn) {
+    public Response get(@Context Request request, @PathParam("idn") String idn) {
+        if (!GND_IDN_PATTERN.matcher(idn).matches()) {
+            return error(Response.Status.BAD_REQUEST, "Invalid IDN passed");
+        }
+
         try {
-            if (idn.isBlank()) {
-                throw new InvalidParameterException("No IDN passed");
-            }
-            if (!gndIdnPattern.matcher(idn).matches()) {
-                throw new InvalidParameterException("Invalid IDN passed: '" + idn + "'");
-            }
-            LOG.info("Execute request for IDN '{}'...", idn);
-            final URL url = URI.create(EF_URL + idn).toURL();
-            final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.addRequestProperty("Accept-Language", "en");
+            LOG.debug("Fetching Entity Facts for IDN {}", idn);
+            final HttpURLConnection conn = (HttpURLConnection) URI.create(EF_URL + idn).toURL().openConnection();
+            final String input;
+            try {
+                conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(READ_TIMEOUT_MS);
+                conn.setRequestProperty("Accept-Language", "en");
 
-            if (conn.getResponseCode() != 200) {
-                final String result = inputStreamToString(conn.getErrorStream(), "UTF-8");
-                final String contenType = conn.getContentType();
-                final int responseCode = conn.getResponseCode();
-                conn.disconnect();
-                return Response
-                        .status(responseCode)
-                        .type(contenType)
-                        .entity(result)
-                        .build();
-            }
-
-            final Processor p = ProcessorFactory.getInstance().getFreeProcessor();
-            final String result = p.process(inputStreamToString(conn.getInputStream(), "UTF-8"));
-
-            p.setFree(); // always set the processor free from outside
-            conn.disconnect();
-
-            if (result.isEmpty()) {
-                return Response
-                        .status(501)
-                        .entity("{\"Error\":\"Requested resource '" + idn + "' is NOT supported by Schema.org\"}")
-                        .build();
-            }
-
-            final byte[] hashData = result.getBytes("UTF-8");
-            final ByteArrayInputStream in = new ByteArrayInputStream(hashData);
-            final StreamingXXHash64 hash64 = XX.newStreamingHash64(SEED);
-
-            final byte[] buf = new byte[8192];
-            for (;;) {
-                int read = in.read(buf);
-                if (read == -1) {
-                    break;
+                final int status = conn.getResponseCode();
+                if (status != HttpURLConnection.HTTP_OK) {
+                    return upstreamResponse(conn, status);
                 }
-                hash64.update(buf, 0, read);
+                input = readUtf8(conn.getInputStream());
+            } finally {
+                conn.disconnect();
             }
-            final long hash = hash64.getValue();
-            final String tagValue = String.format(Locale.ROOT, "%016x", hash);
 
-            final EntityTag tag = new EntityTag(tagValue);
-            final Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
-            if (rb != null) return rb.cacheControl(cc).tag(tag).build();
+            final var processed = ProcessorFactory.getInstance().tryProcess(input);
+            if (processed.isEmpty()) {
+                return error(Response.Status.SERVICE_UNAVAILABLE, "No processor available");
+            }
+            final String result = processed.get();
+            if (result.isEmpty()) {
+                return error(Response.Status.NOT_IMPLEMENTED,
+                        "Requested resource '" + idn + "' is not supported by Schema.org");
+            }
 
-            return Response.ok(result, MediaType.APPLICATION_JSON)
-                    .cacheControl(cc)
-                    .tag(tag)
-                    .build();
-
-        } catch (InvalidParameterException e) {
-            LOG.warn(e.getMessage());
-            return Response
-                    .status(500)
-                    .entity("{\"Error\":\"" + e.getMessage() + "\"}")
-                    .build();
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            return Response
-                    .status(500)
-                    .entity("{\"Error\":\"" + e.getMessage() + "\"}")
-                    .build();
+            return cacheableResponse(request, result);
+        } catch (SocketTimeoutException e) {
+            LOG.warn("Entity Facts request timed out for IDN {}", idn, e);
+            return error(Response.Status.GATEWAY_TIMEOUT, "Entity Facts request timed out");
+        } catch (IOException | MetafactureException e) {
+            LOG.warn("Could not read or process Entity Facts for IDN {}", idn, e);
+            return error(Response.Status.BAD_GATEWAY, "Could not read or process Entity Facts");
+        } catch (RuntimeException e) {
+            LOG.error("Could not convert Entity Facts for IDN {}", idn, e);
+            return error(Response.Status.INTERNAL_SERVER_ERROR, "Could not convert Entity Facts");
         }
     }
 
-    /**
-     * Converts a InputString to a String
-     *
-     * @param is      Input as InputString
-     * @param charset Charset ("UTF-8")
-     * @return String with content
-     * @throws java.io.IOException
-     */
-    public static String inputStreamToString(final InputStream is, final String charset) throws IOException {
-        if (is == null) {
+    private static Response cacheableResponse(Request request, String result) {
+        final byte[] bytes = result.getBytes(StandardCharsets.UTF_8);
+        final long hash = HASH.hash(bytes, 0, bytes.length, 0L);
+        // The same weak validator covers identity, gzip and Brotli.
+        final EntityTag tag = new EntityTag(HexFormat.of().toHexDigits(hash), true);
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(CACHE_MAX_AGE_SECONDS);
+        final Response.ResponseBuilder preconditions = request.evaluatePreconditions(tag);
+        final Response.ResponseBuilder response = preconditions == null
+                ? Response.ok(result, MediaType.APPLICATION_JSON) : preconditions;
+        return response.cacheControl(cacheControl).tag(tag).build();
+    }
+
+    private static Response upstreamResponse(HttpURLConnection conn, int status) throws IOException {
+        final String body = readUtf8(conn.getErrorStream());
+        final Response.ResponseBuilder response = Response.status(status);
+        if (!body.isEmpty()) {
+            response.type(conn.getContentType()).entity(body);
+        }
+        return response.build();
+    }
+
+    private static String readUtf8(InputStream stream) throws IOException {
+        if (stream == null) {
             return "";
         }
-        try (is; BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName(charset)))) {
-            final StringBuilder sb = new StringBuilder();
-            int value;
-            while ((value = br.read()) != -1) {
-                sb.append((char) value);
-            }
-            return sb.toString();
+        try (stream) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         }
+    }
+
+    private static Response error(Response.Status status, String message) {
+        final StringBuilder body = new StringBuilder("{\"Error\":\"");
+        JsonStringEncoder.getInstance().quoteAsString(message, body);
+        return Response.status(status).type(MediaType.APPLICATION_JSON)
+                .entity(body.append("\"}").toString())
+                .build();
     }
 }

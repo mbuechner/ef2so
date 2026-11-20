@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2026 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package de.ddb.labs.ef2so.processor;
 
 import de.ddb.labs.ef2so.metafacture.JsonDecoder;
+import java.util.Objects;
 import org.metafacture.json.JsonEncoder;
 import org.metafacture.metamorph.Filter;
 import org.metafacture.metamorph.Metamorph;
@@ -27,54 +28,37 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Büchner <m.buechner@dnb.de>
  */
-public class Processor {
+public final class Processor {
 
     private static final String MORPH_FILTER_SCRIPT = "ef2so_filter.xml";
     private static final String MORPH_TRANS_SCRIPT = "ef2so_transformation.xml";
     private static final Logger LOG = LoggerFactory.getLogger(Processor.class);
-    private final Metamorph trans;
-    private final Filter filter;
-    private final JsonEncoder jsonEncoder;
-    private final JsonDecoder myjsonDecoder;
-    private final StringConcatenator stringConcatenator;
-    private boolean free;
+    private final JsonDecoder jsonDecoder = new JsonDecoder();
+    private final StringConcatenator stringConcatenator = new StringConcatenator();
 
     public Processor() {
-        this.trans = new Metamorph(MORPH_TRANS_SCRIPT);
-        this.filter = new Filter(MORPH_FILTER_SCRIPT);
-        this.jsonEncoder = new JsonEncoder();
-        // this.jsonEncoder.setPrettyPrinting(true);
-
-        this.myjsonDecoder = new JsonDecoder();
-        this.stringConcatenator = new StringConcatenator();
-        this.free = true;
-
-        myjsonDecoder
-                .setReceiver(filter)
-                .setReceiver(trans)
-                .setReceiver(jsonEncoder)
+        jsonDecoder
+                .setReceiver(new Filter(scriptUrl(MORPH_FILTER_SCRIPT)))
+                .setReceiver(new Metamorph(scriptUrl(MORPH_TRANS_SCRIPT)))
+                .setReceiver(new JsonEncoder())
                 .setReceiver(stringConcatenator);
+    }
+
+    private static String scriptUrl(String name) {
+        return Objects.requireNonNull(Processor.class.getResource("/" + name),
+                "Missing Metamorph script: " + name).toExternalForm();
     }
 
     public String process(String input) {
         LOG.debug("Processor {} starts processing...", this.hashCode());
-        myjsonDecoder.process(input);
+        jsonDecoder.process(input);
         final String result = stringConcatenator.getString();
         LOG.debug("Processor {} is done.", this.hashCode());
         return result;
     }
 
-    public boolean isFree() {
-        return free;
-    }
-
-    public void setOccupied() {
-        this.free = false;
-    }
-
-    public void setFree() {
-        myjsonDecoder.resetStream();
-        this.free = true;
+    void reset() {
+        jsonDecoder.resetStream();
     }
 
 }

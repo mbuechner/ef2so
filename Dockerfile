@@ -1,22 +1,34 @@
-FROM maven:3-amazoncorretto-21 AS mchain
-WORKDIR /tmp
-COPY . .
-RUN sed -i 's#<url-pattern>/\*</url-pattern>#<url-pattern>${URLPATTERN}</url-pattern>#' src/main/webapp/WEB-INF/web.xml; \
-  mvn package;
+FROM maven:3-amazoncorretto-25 AS build
 
-FROM tomcat:11-jre21
+WORKDIR /build
+COPY pom.xml .
+COPY src src
+ARG SOURCE_DATE_EPOCH=315532802
+# Tomcat substitutes URLPATTERN when it starts.
+RUN sed -i "s#<url-pattern>/[*]</url-pattern>#<url-pattern>\${URLPATTERN}</url-pattern>#" src/main/webapp/WEB-INF/web.xml \
+ && grep -Fq "<url-pattern>\${URLPATTERN}</url-pattern>" src/main/webapp/WEB-INF/web.xml \
+ && mvn -B -ntp "-Dproject.build.outputTimestamp=${SOURCE_DATE_EPOCH}" clean verify
+
+FROM tomcat:11-jre25-temurin-noble AS tomcat-dist
+
+FROM amazoncorretto:25
 LABEL maintainer="Michael Büchner <m.buechner@dnb.de>"
 
-# Default-Webapps raus
-RUN rm -rf "${CATALINA_HOME}/webapps/"*
+ENV CATALINA_HOME=/opt/tomcat
+WORKDIR /opt/tomcat
 
-# App + setenv.sh kopieren
-COPY --from=mchain /tmp/target/ef2so.war ${CATALINA_HOME}/webapps/ROOT.war
-COPY --from=mchain /tmp/setenv.sh ${CATALINA_HOME}/bin/
+COPY --from=tomcat-dist /usr/local/tomcat/bin/ /opt/tomcat/bin/
+COPY --from=tomcat-dist /usr/local/tomcat/conf/ /opt/tomcat/conf/
+COPY --from=tomcat-dist /usr/local/tomcat/lib/ /opt/tomcat/lib/
+COPY --from=tomcat-dist /usr/local/tomcat/LICENSE /usr/local/tomcat/NOTICE /usr/local/tomcat/RELEASE-NOTES /opt/tomcat/
+COPY --from=build /build/target/ef2so.war /opt/tomcat/webapps/ROOT.war
+COPY --from=build /build/target/ef2so-sbom.json /opt/ef2so/ef2so-sbom.json
+COPY setenv.sh /opt/tomcat/bin/setenv.sh
 
-# OpenShift-Compatibility
-RUN chmod +x "${CATALINA_HOME}/bin/setenv.sh" \
- && chgrp -R 0 "${CATALINA_HOME}" \
- && chmod -R g=u "${CATALINA_HOME}"
+# OpenShift can substitute an arbitrary UID in group 0.
+RUN mkdir -p logs temp webapps work \
+ && chmod g=u logs temp webapps work
 
+USER 1001:0
 EXPOSE 8080
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]

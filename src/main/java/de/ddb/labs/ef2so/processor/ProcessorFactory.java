@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2026 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package de.ddb.labs.ef2so.processor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +28,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ProcessorFactory {
 
-    private final static int MAX_POOL_SIZE = 128; // no. of max. parallel requests
-    private final List<Processor> pool = Collections.synchronizedList(new ArrayList<>());
-    private final static Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
+    private static final int MAX_POOL_SIZE = 128;
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
+    private final Queue<Processor> idleProcessors = new ConcurrentLinkedQueue<>();
+    private final Semaphore permits = new Semaphore(MAX_POOL_SIZE);
 
     private static final class InstanceHolder {
 
@@ -40,23 +41,26 @@ public class ProcessorFactory {
     private ProcessorFactory() {
         LOG.info("Initializing pool with {} processors...", MAX_POOL_SIZE);
         for (int i = 0; i < MAX_POOL_SIZE; ++i) {
-            pool.add(new Processor());
+            idleProcessors.add(new Processor());
         }
         LOG.info("Done initializing pool.");
     }
 
-    public Processor getFreeProcessor() {
-        final Iterator<Processor> iterator = pool.iterator();
-        synchronized (pool) {
-            while (iterator.hasNext()) {
-                final Processor p = iterator.next();
-                if (p.isFree()) {
-                    p.setOccupied();
-                    return p;
-                }
-            }
+    public Optional<String> tryProcess(final String input) {
+        if (!permits.tryAcquire()) {
+            return Optional.empty();
         }
-        throw new IllegalStateException("Could not process request, because there's no processor left.");
+        try {
+            final Processor idle = idleProcessors.poll();
+            final Processor processor = idle == null ? new Processor() : idle;
+            final String result = processor.process(input);
+            processor.reset();
+            // Only reuse processors whose entire pipeline completed and reset successfully.
+            idleProcessors.add(processor);
+            return Optional.of(result);
+        } finally {
+            permits.release();
+        }
     }
 
     public static ProcessorFactory getInstance() {

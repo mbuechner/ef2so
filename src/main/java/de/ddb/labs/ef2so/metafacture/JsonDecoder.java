@@ -15,14 +15,15 @@
  */
 package de.ddb.labs.ef2so.metafacture;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import java.util.Locale;
 import org.metafacture.framework.MetafactureException;
 import org.metafacture.framework.StreamReceiver;
 import org.metafacture.framework.helpers.DefaultObjectPipe;
-
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.json.JsonFactory;
 
 /**
  * Decodes a record in JSON format.
@@ -35,9 +36,7 @@ public final class JsonDecoder extends DefaultObjectPipe<String, StreamReceiver>
     public static final String DEFAULT_ARRAY_MARKER = "#";
     public static final String DEFAULT_ARRAY_NAME = "#item";
     public static final String DEFAULT_RECORD_ID = "%d";
-    private final JsonFactory jsonFactory = new JsonFactory();
-
-    private JsonParser jsonParser;
+    private static final JsonFactory JSON_FACTORY = new JsonFactory();
     private String arrayMarker;
     private String arrayName;
     private String recordId;
@@ -93,14 +92,10 @@ public final class JsonDecoder extends DefaultObjectPipe<String, StreamReceiver>
     public void process(final String string) {
         assert !isClosed();
 
-        createParser(string);
-
-        try {
-            decode();
-        } catch (final IOException e) {
+        try (JsonParser parser = JSON_FACTORY.createParser(ObjectReadContext.empty(), string)) {
+            decode(parser);
+        } catch (final JacksonException e) {
             throw new MetafactureException(e);
-        } finally {
-            closeParser();
         }
     }
 
@@ -109,67 +104,47 @@ public final class JsonDecoder extends DefaultObjectPipe<String, StreamReceiver>
         resetRecordCount();
     }
 
-    private void createParser(final String string) {
-        try {
-            jsonParser = jsonFactory.createParser(string);
-        } catch (final IOException e) {
-            throw new MetafactureException(e);
-        }
-    }
-
-    private void closeParser() {
-        try {
-            jsonParser.close();
-        } catch (final IOException e) {
-            throw new MetafactureException(e);
-        }
-    }
-
-    private void decode() throws IOException {
-        while (jsonParser.nextToken() == JsonToken.START_OBJECT) {
-            getReceiver().startRecord(String.format(recordId, ++recordCount));
-            decodeObject();
+    private void decode(final JsonParser parser) {
+        JsonToken token;
+        while ((token = parser.nextToken()) == JsonToken.START_OBJECT) {
+            getReceiver().startRecord(String.format(Locale.ROOT, recordId, ++recordCount));
+            decodeObject(parser);
             getReceiver().endRecord();
         }
 
-        if (jsonParser.currentToken() != null) {
-            throw new MetafactureException(new StringBuilder()
-                    .append("Unexpected token '")
-                    .append(jsonParser.currentToken())
-                    .append("' at ")
-                    .append(jsonParser.currentLocation())
-                    .toString());
+        if (token != null) {
+            throw new MetafactureException("Unexpected token '" + token + "' at " + parser.currentLocation());
         }
     }
 
-    private void decodeObject() throws IOException {
-        while (jsonParser.nextToken() == JsonToken.FIELD_NAME) {
-            decodeValue(jsonParser.currentName(), jsonParser.nextToken());
+    private void decodeObject(final JsonParser parser) {
+        while (parser.nextToken() == JsonToken.PROPERTY_NAME) {
+            decodeValue(parser, parser.currentName(), parser.nextToken());
         }
     }
 
-    private void decodeArray() throws IOException {
+    private void decodeArray(final JsonParser parser) {
         int arrayCount = 0;
 
-        while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-            decodeValue(String.format(arrayName, ++arrayCount), jsonParser.currentToken());
+        while (parser.nextToken() != JsonToken.END_ARRAY) {
+            decodeValue(parser, String.format(Locale.ROOT, arrayName, ++arrayCount), parser.currentToken());
         }
     }
 
-    private void decodeValue(final String name, final JsonToken token) throws IOException {
+    private void decodeValue(final JsonParser parser, final String name, final JsonToken token) {
         switch (token) {
             case START_OBJECT -> {
                 getReceiver().startEntity(name);
-                decodeObject();
+                decodeObject(parser);
                 getReceiver().endEntity();
             }
             case START_ARRAY -> {
                 getReceiver().startEntity(name + arrayMarker);
-                decodeArray();
+                decodeArray(parser);
                 getReceiver().endEntity();
             }
             case VALUE_NULL -> getReceiver().literal(name, null);
-            default -> getReceiver().literal(name, jsonParser.getText());
+            default -> getReceiver().literal(name, parser.getString());
         }
     }
 }

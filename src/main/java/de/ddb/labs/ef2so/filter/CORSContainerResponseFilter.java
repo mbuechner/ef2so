@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2026 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package de.ddb.labs.ef2so.filter;
 
-import java.io.IOException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
@@ -29,24 +28,11 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class CORSContainerResponseFilter implements ContainerResponseFilter {
 
-    /**
-     * Adds a CORS header the all responses
-     *
-     * @param request HTTP Request
-     * @param response
-     * @throws java.io.IOException
-     */
     @Override
-    public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {    
-        
-        String allowOrigin = "*";
-        if (request.getHeaderString("Origin") != null && !request.getHeaderString("Origin").isEmpty()) {
-            allowOrigin = request.getHeaderString("Origin");
-        }
-
-        final MultivaluedMap <String, Object> headers = response.getHeaders();
-        headers.add("Access-Control-Allow-Origin", allowOrigin);
-        headers.add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Accept-Encoding");
-        headers.add("Access-Control-Allow-Methods", "GET");
+    public void filter(ContainerRequestContext request, ContainerResponseContext response) {
+        final MultivaluedMap<String, Object> headers = response.getHeaders();
+        headers.putSingle("Access-Control-Allow-Origin", "*");
+        headers.putSingle("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Accept-Encoding");
+        headers.putSingle("Access-Control-Allow-Methods", "GET");
     }
 }

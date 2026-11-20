@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
+Copyright 2018-2026 Michael Büchner, Deutsche Digitale Bibliothek.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -96,11 +96,11 @@ limitations under the License.
         <!-- gender -->
         <choose flushWith="gender" name="gender">
             <data source="gender.@id">
-                <equals string="http://d-nb.info/standards/vocab/gnd/gender#male" />
+                <regexp match="^https?://d-nb\.info/standards/vocab/gnd/gender#male$" />
                 <constant value="http://schema.org/Male" />
             </data>
             <data source="gender.@id">
-                <equals string="http://d-nb.info/standards/vocab/gnd/gender#female" />
+                <regexp match="^https?://d-nb\.info/standards/vocab/gnd/gender#female$" />
                 <constant value="http://schema.org/Female" />
             </data>
         </choose>

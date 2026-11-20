@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 Michael Büchner, Deutsche Digitale Bibliothek.
+ * Copyright 2018-2026 Michael Büchner, Deutsche Digitale Bibliothek.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 package de.ddb.labs.ef2so.filter;
 
-import com.nixxcode.jvmbrotli.common.BrotliLoader;
-import com.nixxcode.jvmbrotli.enc.BrotliOutputStream;
+import com.aayushatharva.brotli4j.encoder.BrotliOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptorContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,59 +38,40 @@ import org.slf4j.LoggerFactory;
 @Priority(3000)
 public class CompressWriterInterceptor implements WriterInterceptor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CompressWriterInterceptor.class);
-    private static final String HDR_ACCEPT_ENCODING = "Accept-Encoding";
-    private static final String HDR_CONTENT_ENCODING = "Content-Encoding";
-    private static final String HDR_CONTENT_LENGTH = "Content-Length";
-    private static final String HDR_VARY = "Vary";
-    private static final boolean BROTLI_AVAILABLE = BrotliLoader.isBrotliAvailable();
-
-    public CompressWriterInterceptor() {
-        // Trigger static init to detect native availability early
-        // (result cached in BROTLI_AVAILABLE)
-    }
-
     @Override
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
-        // If already encoded or no entity, just continue
-        LOG.trace("CompressWriterInterceptor invoked");
-        if (context.getEntity() == null || context.getHeaders().containsKey(HDR_CONTENT_ENCODING)) {
+        final Object encoding = context.getProperty(CompressRequestFilter.REQ_PROP_ENCODING);
+        if (!(encoding instanceof String chosen) || context.getEntity() == null
+                || context.getHeaders().containsKey(HttpHeaders.CONTENT_ENCODING)) {
             context.proceed();
             return;
         }
 
-        // Preferred encoding is determined in CompressRequestFilter and stored as a
-        // property
-        final Object encObj = context.getProperty(CompressRequestFilter.REQ_PROP_ENCODING);
-        final String chosen = (encObj instanceof String) ? (String) encObj : null;
-
-        if (chosen != null) {
-            final OutputStream os = context.getOutputStream();
-            switch (chosen) {
-                case "br":
-                    if (BROTLI_AVAILABLE) {
-                        context.setOutputStream(new BrotliOutputStream(os));
-                        context.getHeaders().add(HDR_CONTENT_ENCODING, "br");
-                    }
-                    break;
-                case "gzip":
-                    context.setOutputStream(new GZIPOutputStream(os));
-                    context.getHeaders().add(HDR_CONTENT_ENCODING, "gzip");
-                    break;
-                case "deflate":
-                    context.setOutputStream(new DeflaterOutputStream(os));
-                    context.getHeaders().add(HDR_CONTENT_ENCODING, "deflate");
-                    break;
-                default:
-                    // no-op
+        final OutputStream original = context.getOutputStream();
+        final OutputStream containerStream = new FilterOutputStream(original) {
+            @Override
+            public void write(byte[] bytes, int offset, int length) throws IOException {
+                out.write(bytes, offset, length);
             }
 
-            if (context.getHeaders().containsKey(HDR_CONTENT_ENCODING)) {
-                context.getHeaders().remove(HDR_CONTENT_LENGTH);
-                context.getHeaders().add(HDR_VARY, HDR_ACCEPT_ENCODING);
+            @Override
+            public void close() {
+                // The container owns the original stream.
             }
+        };
+
+        context.getHeaders().putSingle(HttpHeaders.CONTENT_ENCODING, chosen);
+        context.getHeaders().remove(HttpHeaders.CONTENT_LENGTH);
+        try (OutputStream compressed = switch (chosen) {
+            case "br" -> new BrotliOutputStream(containerStream);
+            case "gzip" -> new GZIPOutputStream(containerStream);
+            case "deflate" -> new DeflaterOutputStream(containerStream);
+            default -> throw new IllegalStateException("Unexpected content coding: " + chosen);
+        }) {
+            context.setOutputStream(compressed);
+            context.proceed();
+        } finally {
+            context.setOutputStream(original);
         }
-
-        context.proceed();
     }
 }
